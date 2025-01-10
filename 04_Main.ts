@@ -10,7 +10,7 @@ function onOpen(e: any)
 {
     // new WeekHider().compareWeek();
 
-    new DayAdder().compareRecentDate();
+    // new DayAdder().compareRecentDate();
     
     const ui = SpreadsheetApp.getUi();
     ui.createMenu('Methods')

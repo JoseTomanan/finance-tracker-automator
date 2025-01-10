@@ -215,11 +215,9 @@ class MasterSheet {
             allottedString += `${ masterHeaderLabels[i][1] }${ lastRow } ,`;
         }
 
-        master.sheet.getRange(lastRow, 1)
-            .setFormula(`= SUM(${ costString })`);
+        master.sheet.getRange(lastRow, 1).setFormula(`= SUM(${ costString })`);
         
-        master.sheet.getRange(lastRow, 2)
-            .setFormula(`= SUM(${ allottedString })`);
+        master.sheet.getRange(lastRow, 2).setFormula(`= SUM(${ allottedString })`);
     }
 }
 
@@ -250,10 +248,6 @@ class IncomingSheet {
     addNewMonth(newMonthName: string) : void
     {
         const totalRow = this.getTotalRow();
-
-        this.sheet.getRange(totalRow, 2)
-            .setFormula(`= SUM(B${ totalRow + 1 } : B${ this.getLastRow() })`);
-
         const startingRow = this.getLastRow() + 2;
         const copyDest = incoming.sheet.getRange(startingRow+1, 1, 1, 3);
 
@@ -264,8 +258,11 @@ class IncomingSheet {
             .setFormula(`= SUM(B${ startingRow + 2 } : B)`);
     }
 
-    #capOffTotal() : void
+    capOffTotalRow() : void
     {
         const totalRow = this.getTotalRow();
+
+        this.sheet.getRange(totalRow, 2)
+            .setFormula(`= SUM(B${ totalRow + 1 } : B${ this.getLastRow() })`);
     }
 }

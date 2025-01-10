@@ -1,6 +1,5 @@
 /**
  * Abstraction that adds new day
- * -- Currently very slow! Impractical to use; might be optimizable
  */
 class DayAdder {
     addToday() : void
@@ -46,28 +45,37 @@ class MonthAdder {
     {
         outgoing.archiveSheet();
 
-        const newSheet: GAS.Spreadsheet.Sheet = this.instantiateNewMonth();
-
+        const newSheet: GAS.Spreadsheet.Sheet = this.#instantiateNewMonth();
+        
         outgoing.setSheet(newSheet);
+
+        incoming.capOffTotalRow();
         incoming.addNewMonth(this.newMonthName);
 
         master.capPrevAllotted(incoming.getLastRow(), incoming.getTotalRow());
         master.addNewRow(this.newMonthName);
         master.makeFormulas(this.newMonthName, incoming.getLastRow() + 4);
 
-        outgoing.sheet.activate();
-        outgoing.sheet.getRange(4, 2)
-            .setValue(Utilities.formatDate(new Date(), "GMT+8", "MM/dd/yyyy"));
+        this.#activateNewMonth();
     }
 
-    instantiateNewMonth() : GAS.Spreadsheet.Sheet
+    #instantiateNewMonth() : GAS.Spreadsheet.Sheet
     {
         const template: GAS.Spreadsheet.Sheet = spreadsheet.getSheetByName("OUTGOINGTEMPLATE")!;
         template.copyTo(spreadsheet).setName(this.newMonthName);
 
-        const returnable: GAS.Spreadsheet.Sheet = spreadsheet.getSheetByName(this.newMonthName)!.activate();
+        const returnable: GAS.Spreadsheet.Sheet = spreadsheet.getSheetByName(this.newMonthName)!;
+        
+        returnable.activate();
         spreadsheet.moveActiveSheet(2);
 
         return returnable;
+    }
+
+    #activateNewMonth() : void
+    {
+        outgoing.sheet.activate();
+        outgoing.sheet.getRange(4, 2)
+            .setValue(Utilities.formatDate(new Date(), "GMT+8", "MM/dd/yyyy"));
     }
 }
