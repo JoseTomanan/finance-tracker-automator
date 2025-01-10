@@ -43,9 +43,11 @@ class MonthAdder {
 
     addNewMonth() : void
     {
+        userProperties.deleteProperty("CURRENT_WEEK_FIRST_ENTRY");
+
         outgoing.archiveSheet();
 
-        const newSheet: GAS.Spreadsheet.Sheet = this.#instantiateNewMonth();
+        const newSheet = this.#instantiateNewMonth();
         
         outgoing.setSheet(newSheet);
 

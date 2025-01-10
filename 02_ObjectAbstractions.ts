@@ -30,6 +30,16 @@ class OutgoingSheet {
         this.sheet = newSheet;
     }
 
+    /** 
+     * Archive current sheet (i.e. hide in Google Sheets) 
+     */
+    archiveSheet() : void
+    {
+        this.sheet.activate();
+        spreadsheet.moveActiveSheet(3);
+        this.sheet.hideSheet();
+    }
+
     /**
      * Hooked to addToday();
      * Add new line with today's date
@@ -98,25 +108,29 @@ class OutgoingSheet {
             spreadsheet.getSpreadsheetTimeZone(), 'w'
             );
         
-        return (latestEntryWeek < currentWeek);
+        return latestEntryWeek < currentWeek;
     }
 
     /**
-     * Hide previous weeks. Under construction!
+     * Hide previous weeks. Unstable; under construction!
      */
     #hideLastWeek() : void
     {
-        outgoing.sheet.hideRows(4, this.getLastRow() - this.datesRowOffset+1);
-    }
+        const endHideable = this.getLastRow() - this.datesRowOffset + 1;
+        const returnValue = userProperties.getProperty("CURRENT_WEEK_FIRST_ENTRY");
+        
+        if (returnValue !== null) {
+            const startHideable = +returnValue;
 
-    /** 
-     * Archive current sheet (i.e. hide in Google Sheets) 
-     */
-    archiveSheet() : void
-    {
-        this.sheet.activate();
-        spreadsheet.moveActiveSheet(3);
-        this.sheet.hideSheet();
+            this.sheet.hideRows(startHideable, endHideable);
+            this.sheet.getRange(this.getLastRow()+1, 3).setValue("<~~NEW WEEK~~>");
+
+            userProperties.setProperty("CURRENT_WEEK_FIRST_ENTRY", `${ this.getLastRow()+1 }`);
+        }
+        
+        else {
+            this.sheet.hideRows(this.datesRowOffset, endHideable);
+        }
     }
 }
 

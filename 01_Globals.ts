@@ -16,7 +16,8 @@ const masterHeaderLabels: Array<Array<String>> = [
     ["E", "F"], ["G", "H"], ["I", "J"], ["K", "L"], ["M", "N"], ["O", "P"], ["Q", "R"]
     ];
 
-const spreadsheet: GAS.Spreadsheet.Spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+const userProperties = PropertiesService.getUserProperties();
 
 var master: MasterSheet;
 var outgoing: OutgoingSheet;
