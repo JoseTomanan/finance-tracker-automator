@@ -10,10 +10,10 @@ class DayAdder {
     compareRecentDate() : void
     {
         if (outgoing.isNeedsNewDay() === true)
-            this.startNewDay(new Date());
+            this.#startNewDay(new Date());
     }
 
-    startNewDay(mostRecentDate: Date) : void
+    #startNewDay(mostRecentDate: Date) : void
     {
         this.addToday();
         
@@ -65,7 +65,7 @@ class MonthAdder {
         template.copyTo(spreadsheet).setName(this.newMonthName);
 
         const returnable: GAS.Spreadsheet.Sheet = spreadsheet.getSheetByName(this.newMonthName)!;
-        
+
         returnable.activate();
         spreadsheet.moveActiveSheet(2);
 
