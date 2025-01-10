@@ -20,9 +20,6 @@ function onOpen(e: any)
         .addToUi();
 }
 
-/**
- * Adapter functions to method abstractions
- */
 function addToday()
 {
     new DayAdder().addToday();

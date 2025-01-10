@@ -44,182 +44,30 @@ class MonthAdder {
 
     addNewMonth() : void
     {
-        this.hideCurrentMonth();
+        outgoing.archiveSheet();
 
-        const incomingLastRow = incoming.sheet.getLastRow();
+        const newSheet: GAS.Spreadsheet.Sheet = this.instantiateNewMonth();
 
-        const incomingTotalRow = this.findIncomingTotalRow(incomingLastRow);
-        const incomingNewRowStart = incomingLastRow+4;
+        outgoing.setSheet(newSheet);
+        incoming.addNewMonth(this.newMonthName);
 
-        this.updateIncomingSheet(this.newMonthName, incomingLastRow, incomingTotalRow);
-        
-        const masterLastRow = master.sheet.getLastRow();
+        master.capPrevAllotted(incoming.getLastRow(), incoming.getTotalRow());
+        master.addNewRow(this.newMonthName);
+        master.makeFormulas(this.newMonthName, incoming.getLastRow() + 4);
 
-        this.capOffAllotted(masterLastRow, incomingLastRow, incomingTotalRow);
-    
-        const masterNewRow = masterLastRow + 1;
-        
-        /**
-         * For new month;
-         * Create new row in masterSheet
-         */
-        master.sheet.insertRowAfter(masterLastRow);
-        master.sheet.getRange(masterNewRow, 1).setValue(this.newMonthName);
-    
-        /**
-         * Add necessary formulas for each column in new row
-         */
-        for (var i = 1; i <= masterHeaderLabels.length; i++) {
-            master.sheet
-                .getRange(masterNewRow, i*2)
-                .setFormula(
-                    `= SUMIF( \
-                        ${ this.newMonthName }!$E4: $E, \
-                        ${ masterHeaderLabels[i-1][0] }$1, \
-                        ${ this.newMonthName }!$F4: $F \
-                    )`
-                );
-
-            master.sheet
-                .getRange(masterNewRow, i*2 + 1)
-                .setFormula(
-                    `= SUMIF( \
-                        INCOMING! $C${ incomingNewRowStart-1 }: $C, \
-                        ${ masterHeaderLabels[i-1][0] }$1, \
-                        INCOMING! $B${ incomingNewRowStart-1 }: $B \
-                    )`
-                );
-        }
-    
-        /**
-         * Add TOTAL columns
-         */
-        master.sheet
-            .getRange(masterNewRow, 1)
-            .setFormula(
-                `= SUM( \
-                    E${ masterNewRow }, \
-                    G${ masterNewRow }, \
-                    I${ masterNewRow }, \
-                    K${ masterNewRow }, \
-                    M${ masterNewRow }, \
-                    O${ masterNewRow }, \
-                    Q${ masterNewRow } \
-                )`
-            );
-        
-        master.sheet
-            .getRange(masterNewRow, 2)
-            .setFormula(
-                `= SUM( \
-                    F${ masterNewRow }, \
-                    H${ masterNewRow }, \
-                    J${ masterNewRow }, \
-                    L${ masterNewRow }, \
-                    N${ masterNewRow }, \
-                    P${ masterNewRow }, \
-                    R${ masterNewRow } \
-                )`
-            );
-    
-        /**
-         * Add ON HAND column
-         */
-        master.sheet
-            .getRange(masterNewRow, 16)
-            .setFormula(
-                `= C${ masterNewRow } - B${ masterNewRow }`
-                );
-    
-        /**
-         * Activate month sheet, then add entry manually
-         */
         outgoing.sheet.activate();
         outgoing.sheet.getRange(4, 2)
-            .setValue(
-                Utilities.formatDate(new Date(), "GMT+8", "MM/dd/yyyy")
-                );
+            .setValue(Utilities.formatDate(new Date(), "GMT+8", "MM/dd/yyyy"));
     }
 
-    hideCurrentMonth() : void
+    instantiateNewMonth() : GAS.Spreadsheet.Sheet
     {
-        outgoing.sheet.activate();
-        spreadsheet.moveActiveSheet(3);
-        outgoing.sheet.hideSheet();
-    }
+        const template: GAS.Spreadsheet.Sheet = spreadsheet.getSheetByName("OUTGOINGTEMPLATE")!;
+        template.copyTo(spreadsheet).setName(this.newMonthName);
 
-    createNewMonth() : string
-    {
-        const outgoingTemplate: GAS.Spreadsheet.Sheet = spreadsheet.getSheetByName("OUTGOINGTEMPLATE")!;
-        
-        const newMonthName = `${months[new Date().getMonth()]} ${new Date().getFullYear()}`;
-
-        outgoingTemplate.copyTo(spreadsheet).setName(newMonthName);
-
-        outgoing.setSheet( spreadsheet.getSheetByName(newMonthName)! );
-        outgoing.sheet.activate();
+        const returnable: GAS.Spreadsheet.Sheet = spreadsheet.getSheetByName(this.newMonthName)!.activate();
         spreadsheet.moveActiveSheet(2);
 
-        return newMonthName;
+        return returnable;
     }
-
-    findIncomingTotalRow(incomingLastRow: number) : number
-    {
-        const dataIncomingFirstRow = incoming.sheet.getDataRange().getValues();
-        
-        var incomingTotalRow = -1;
-        
-        for (var i = incomingLastRow - 1; i >= 0; i--)
-            if (dataIncomingFirstRow[i][0] === "TOTAL") {
-                incomingTotalRow = i + 1;
-                break;
-            }
-
-        return incomingTotalRow;
-    }
-
-    updateIncomingSheet(newMonthName: string, incomingLastRow: number, incomingTotalRow: number) : void
-    {
-        incoming.sheet
-            .getRange(incomingTotalRow, 2)
-            .setFormula("= SUM(B" + (incomingTotalRow + 1) + ":" + incomingLastRow + ")");
-        
-        const incomingNewRow = incomingLastRow + 3;
-        const incomingNewRowStart = incomingNewRow + 1;
-
-        incoming.sheet.insertRows(incomingLastRow + 1, 5);
-
-        const copyDest = incoming.sheet.getRange(incomingNewRow, 1, 1, 3);
-        incoming.sheet
-            .getRange(incomingTotalRow, 1, 1, 3)
-            .copyTo(copyDest);
-
-        incoming.sheet.getRange(incomingNewRow - 1, 1).setValue(newMonthName);
-
-        incoming.sheet
-            .getRange(incomingNewRow, 2)
-            .setFormula("= SUM(B" + incomingNewRowStart + ":B)");
-        
-        // incomingSheet.insertRowAfter(incomingNewRow);
-    }
-
-    capOffAllotted(masterLastRow: number, incomingLastRow: number, incomingTotalRow: number) {
-        for (var i = 1; i <= masterHeaderLabels.length; i++) {
-            master.sheet
-                .getRange(masterLastRow, i*2 + 1)
-                .setFormula(
-                    `= SUMIF( \
-                        INCOMING! $C${ incomingTotalRow }: $C${ incomingLastRow }, \
-                        ${ masterHeaderLabels[i-1][0] }$1, \
-                        INCOMING! $B${ incomingTotalRow }: $B${ incomingLastRow } \
-                    )`
-                );
-        }
-    }
-
-    addMonthInMaster() : void
-    {}
-
-    addCellsInTotal() : void
-    {}
 }
