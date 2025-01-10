@@ -25,6 +25,15 @@ class OutgoingSheet {
         return this.sheet.getRange(this.getLastRow()+1, 2, 1, 2);
     }
 
+    getMostRecentDate() : Date
+    {
+        const columnData = outgoing.sheet.getRange("B:B").getValues();
+        const lastRow = columnData.filter(String).length + 1;
+        const mostRecentDate = new Date( columnData[lastRow][0] );
+
+        return mostRecentDate;
+    }
+
     setSheet(newSheet: GAS.Spreadsheet.Sheet) : void
     {
         this.sheet = newSheet;
@@ -59,12 +68,7 @@ class OutgoingSheet {
      */
     isNeedsNewDay() : boolean
     {
-        const columnData = outgoing.sheet.getRange("B:B").getValues();
-        const lastRow = columnData.filter(String).length + 1;
-        
-        const mostRecentDate = new Date( columnData[lastRow][0] );
-        
-        return (mostRecentDate.getDate() != new Date().getDate());
+        return (this.getMostRecentDate().getDate() != new Date().getDate());
     }
 
     /**

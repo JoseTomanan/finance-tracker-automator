@@ -7,20 +7,15 @@ class DayAdder {
         outgoing.addNewEntry();
     }
     
-    compareRecentDate() : void
+    compareRecentEntry() : void
     {
-        if (outgoing.isNeedsNewDay() === true)
-            this.#startNewDay(new Date());
-    }
-
-    #startNewDay(mostRecentDate: Date) : void
-    {
-        this.addToday();
-        
-        new WeekHider().compareWeek();
-        
-        if (mostRecentDate.getMonth() != new Date().getMonth())
-            new MonthAdder().addNewMonth();
+        if (outgoing.isNeedsNewDay() === true) {
+            new WeekHider().compareWeek();
+            this.addToday();
+            
+            if (outgoing.getMostRecentDate().getMonth() != new Date().getMonth())
+                new MonthAdder().addNewMonth();
+        }
     }
 }
 
@@ -48,7 +43,6 @@ class MonthAdder {
         outgoing.archiveSheet();
 
         const newSheet = this.#instantiateNewMonth();
-        
         outgoing.setSheet(newSheet);
 
         incoming.capOffTotalRow();
@@ -63,10 +57,10 @@ class MonthAdder {
 
     #instantiateNewMonth() : GAS.Spreadsheet.Sheet
     {
-        const template: GAS.Spreadsheet.Sheet = spreadsheet.getSheetByName("OUTGOINGTEMPLATE")!;
-        template.copyTo(spreadsheet).setName(this.newMonthName);
+        spreadsheet.getSheetByName("OUTGOINGTEMPLATE")!
+            .copyTo(spreadsheet).setName(this.newMonthName);
 
-        const returnable: GAS.Spreadsheet.Sheet = spreadsheet.getSheetByName(this.newMonthName)!;
+        const returnable = spreadsheet.getSheetByName(this.newMonthName)!;
 
         returnable.activate();
         spreadsheet.moveActiveSheet(2);
