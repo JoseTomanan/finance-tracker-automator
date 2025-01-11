@@ -1,7 +1,7 @@
 node_modules/
 
 # Compiled JavaScript files (if you push .ts files directly)
-dist/
+src/*.js
 
 *.log
 *.tmp

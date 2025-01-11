@@ -29,10 +29,10 @@ class WeekHider {
     {
         if (outgoing.isNeedsNewWeek() === true) {
             outgoing.copyFormatFromPrev();
+            outgoing.hideLastWeek(
+                userProperties.getProperty("CURRENT_WEEK_FIRST_ENTRY")
+                );
 
-            const startHideable = userProperties.getProperty("CURRENT_WEEK_FIRST_ENTRY");
-            
-            outgoing.hideLastWeek(startHideable);
             userProperties.setProperty("CURRENT_WEEK_FIRST_ENTRY", `${ outgoing.getLastRow()+1 }`);
         }
     }
