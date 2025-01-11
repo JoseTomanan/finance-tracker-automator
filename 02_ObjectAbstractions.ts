@@ -273,8 +273,10 @@ class IncomingSheet {
         const copyDest = this.sheet.getRange(startingRow+1, 1, 1, 3);
 
         this.sheet.insertRows(startingRow - 1, 5);
-        this.sheet.getRange(totalRow, 1, 1, 3).copyTo(copyDest);
-        this.sheet.getRange(startingRow, 1).setValue(newMonthName);
+        this.sheet.getRange(totalRow, 1, 1, 3)
+            .copyTo(copyDest);
+        this.sheet.getRange(startingRow, 1)
+            .setValue(newMonthName);
         this.sheet.getRange(startingRow + 1, 2)
             .setFormula(`= SUM(B${ startingRow + 2 } : B)`);
     }
