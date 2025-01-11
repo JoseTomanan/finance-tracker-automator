@@ -1,22 +1,16 @@
 /**
- * Project types
- */
-type RowNumber = number;
-
-
-/**
  * Dataclass for current month sheet
  */
 class OutgoingSheet {
     sheet: GAS.Spreadsheet.Sheet = spreadsheet.getSheets()[1];
-    datesRowOffset: number = 4;
+    datesRowOffset: RowNumber = 4;
 
     getDates() : Object[][]
     {
         return this.sheet.getRange("B:B").getValues();
     }
 
-    getLastRow() : number
+    getLastRow() : RowNumber
     {
         return this.sheet.getLastRow();
     }
@@ -81,7 +75,7 @@ class OutgoingSheet {
      * Hooked to compareWeek();
      * Evaluate if new week is entered
      */
-    evaluateWeek() : void
+    evaluateWeek() : boolean
     {
         if (this.#isNeedsNewWeek() === true) {
             const lastRow = this.getLastRow();
@@ -97,7 +91,11 @@ class OutgoingSheet {
                 );
 
             this.#hideLastWeek();
+
+            return true;
         }
+
+        return false;
     }
 
     /**
@@ -150,12 +148,12 @@ class OutgoingSheet {
 class MasterSheet {
     sheet: GAS.Spreadsheet.Sheet = spreadsheet.getSheetByName("MASTER SHEET")!;
 
-    getLastRow() : number
+    getLastRow() : RowNumber
     {
         return this.sheet.getLastRow();
     }
 
-    capPrevAllotted(lastRow: number, totalRow: number) : void
+    capPrevAllotted(lastRow: RowNumber, totalRow: RowNumber) : void
     {
         const hereLastRow = this.getLastRow();
 
@@ -177,7 +175,7 @@ class MasterSheet {
     /**
      * Set formulas for the new month row (cost, alloted, total, on hand)
      */
-    makeFormulas(newMonthName: string, incomingNewRow: number) : void
+    makeFormulas(newMonthName: string, incomingNewRow: RowNumber) : void
     {
         const lastRow = this.getLastRow();
         
@@ -209,7 +207,7 @@ class MasterSheet {
     /**
      * Add ALLOTTED columns for each category in new month
      */
-    #makeAllottedCols(incomingNewRow: number)
+    #makeAllottedCols(incomingNewRow: RowNumber)
     {
         const lastRow = this.getLastRow();
 
@@ -236,9 +234,10 @@ class MasterSheet {
             allottedString += `${ masterHeaderLabels[i][1] }${ lastRow } ,`;
         }
 
-        this.sheet.getRange(lastRow, 1).setFormula(`= SUM(${ costString })`);
-        
-        this.sheet.getRange(lastRow, 2).setFormula(`= SUM(${ allottedString })`);
+        this.sheet.getRange(lastRow, 1)
+            .setFormula(`= SUM(${ costString })`);
+        this.sheet.getRange(lastRow, 2)
+            .setFormula(`= SUM(${ allottedString })`);
     }
 }
 
@@ -249,12 +248,12 @@ class IncomingSheet {
     sheet: GAS.Spreadsheet.Sheet = spreadsheet.getSheetByName("INCOMING")!;
     newRowOffset: number = 4;
     
-    getLastRow() : number
+    getLastRow() : RowNumber
     {
         return this.sheet.getLastRow();
     }
 
-    getTotalRow() : number
+    getTotalRow() : RowNumber
     {
         const dataFirstRow: Object[][] = this.sheet.getDataRange().getValues();
         

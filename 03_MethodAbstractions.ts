@@ -7,7 +7,7 @@ class DayAdder {
         outgoing.addNewEntry();
     }
     
-    compareRecentEntry() : void
+    compareRecentEntry() : boolean
     {
         if (outgoing.isNeedsNewDay() === true) {
             new WeekHider().compareWeek();
@@ -15,7 +15,11 @@ class DayAdder {
             
             if (outgoing.getMostRecentDate().getMonth() != new Date().getMonth())
                 new MonthAdder().addNewMonth();
+
+            return true;
         }
+
+        return false;
     }
 }
 
@@ -41,9 +45,9 @@ class MonthAdder {
         userProperties.deleteProperty("CURRENT_WEEK_FIRST_ENTRY");
 
         outgoing.archiveSheet();
-
-        const newSheet = this.#instantiateNewMonth();
-        outgoing.setSheet(newSheet);
+        outgoing.setSheet(
+            this.#instantiateNewMonth()
+            );
 
         incoming.capOffTotalRow();
         incoming.addNewMonth(this.newMonthName);
