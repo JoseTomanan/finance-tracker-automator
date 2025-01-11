@@ -1,4 +1,27 @@
-.vscode
-node_modules
+# Node.js dependencies
+node_modules/
+
+# Compiled JavaScript files
+dist/
+
+# Clasp configuration files
 .clasp.json
-.appsscript.json
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# TypeScript build artifacts
+*.js
+*.js.map
+*.d.ts
+
+# TypeScript cache
+*.tsbuildinfo
+
+# MacOS-specific files
+.DS_Store
+
+# Environment files (if any)
+.env
+.vscode
