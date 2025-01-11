@@ -7,19 +7,16 @@ class DayAdder {
         outgoing.addNewEntry();
     }
     
-    compareRecentEntry() : boolean
+    compareRecentEntry() : void
     {
         if (outgoing.isNeedsNewDay() === true) {
             new WeekHider().compareWeek();
-            this.addToday();
+            
+            outgoing.addNewEntry();
             
             if (outgoing.getMostRecentDate().getMonth() != new Date().getMonth())
                 new MonthAdder().addNewMonth();
-
-            return true;
         }
-
-        return false;
     }
 }
 
@@ -30,7 +27,14 @@ class DayAdder {
 class WeekHider {
     compareWeek() : void
     {
-        outgoing.evaluateWeek();
+        if (outgoing.isNeedsNewWeek() === true) {
+            outgoing.copyFormatFromPrev();
+
+            const startHideable = userProperties.getProperty("CURRENT_WEEK_FIRST_ENTRY");
+            
+            outgoing.hideLastWeek(startHideable);
+            userProperties.setProperty("CURRENT_WEEK_FIRST_ENTRY", `${ outgoing.getLastRow()+1 }`);
+        }
     }
 }
 

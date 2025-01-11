@@ -68,40 +68,13 @@ class OutgoingSheet {
      */
     isNeedsNewDay() : boolean
     {
-        return (this.getMostRecentDate().getDate() != new Date().getDate());
-    }
-
-    /**
-     * Hooked to compareWeek();
-     * Evaluate if new week is entered
-     */
-    evaluateWeek() : boolean
-    {
-        if (this.#isNeedsNewWeek() === true) {
-            const lastRow = this.getLastRow();
-            const lastEntryFormat = this.sheet.getRange(
-                lastRow, 1, 1, this.sheet.getLastColumn()
-                );
-            const newEntry = this.sheet.getRange(
-                lastRow+1, 1, 1, this.sheet.getLastColumn()
-                );
-
-            lastEntryFormat.copyTo(
-                newEntry, {formatOnly: true}
-                );
-
-            this.#hideLastWeek();
-
-            return true;
-        }
-
-        return false;
+        return this.getMostRecentDate().getDate() != new Date().getDate();
     }
 
     /**
      * Return whether or not new week is entered (i.e., new Sunday)
      */
-    #isNeedsNewWeek() : boolean
+    isNeedsNewWeek() : boolean
     {
         const columnData = this.sheet.getRange("B4:B").getValues();
         const latestEntryDate = new Date(
@@ -120,25 +93,40 @@ class OutgoingSheet {
     }
 
     /**
-     * Hide previous weeks. Unstable; under construction!
+     * Copy formats from previous week
      */
-    #hideLastWeek() : void
+    copyFormatFromPrev() : void
+    {
+        /** FOR NEW ENTRY */
+        const lastRow = this.getLastRow();
+        const lastEntryFormat = this.sheet.getRange(
+            lastRow, 1, 1, this.sheet.getLastColumn()
+            );
+        const newEntry = this.sheet.getRange(
+            lastRow+1, 1, 1, this.sheet.getLastColumn()
+            );
+
+        lastEntryFormat.copyTo(
+            newEntry, {formatOnly: true}
+            );
+    }
+
+    /**
+     * Hide previous weeks;
+     * Unstable -- under construction!
+     */
+    hideLastWeek(startHideable: string | null) : void
     {
         const endHideable = this.getLastRow() - this.datesRowOffset + 1;
-        const returnValue = userProperties.getProperty("CURRENT_WEEK_FIRST_ENTRY");
         
-        if (returnValue !== null) {
-            const startHideable = +returnValue;
+        if ( startHideable !== null ) {
+            this.sheet.hideRows(+startHideable, endHideable);
 
-            this.sheet.hideRows(startHideable, endHideable);
-            this.sheet.getRange(this.getLastRow()+1, 3).setValue("<~~NEW WEEK~~>");
-
-            userProperties.setProperty("CURRENT_WEEK_FIRST_ENTRY", `${ this.getLastRow()+1 }`);
+            this.sheet.getRange(this.getLastRow()+1, 3)
+                .setValue("<~~ NEW WEEK ~~>");
         }
         
-        else {
-            this.sheet.hideRows(this.datesRowOffset, endHideable);
-        }
+        this.sheet.hideRows(this.datesRowOffset, endHideable);
     }
 }
 
@@ -157,10 +145,10 @@ class MasterSheet {
     {
         const hereLastRow = this.getLastRow();
 
-        for (var i = 1; i <= masterHeaderLabels.length; i++) {
+        for (var i = 0; i < masterHeaderLabels.length; i++) {
             this.sheet.getRange(hereLastRow, i*2 + 1)
                 .setFormula(
-                    `= SUMIF(INCOMING! $C${ totalRow }: $C${ lastRow }, ${ masterHeaderLabels[i-1][0] }$1, INCOMING! $B${ totalRow }: $B${ lastRow })`
+                    `= SUMIF(INCOMING! $C${ totalRow }: $C${ lastRow }, ${ masterHeaderLabels[i][0] }$1, INCOMING! $B${ totalRow }: $B${ lastRow })`
                 );
         }
     }
