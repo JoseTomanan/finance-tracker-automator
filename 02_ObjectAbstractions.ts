@@ -1,5 +1,11 @@
 /**
- * Dataclass for current month sheet (i.e. outgoing funds)
+ * Project types
+ */
+type RowNumber = number;
+
+
+/**
+ * Dataclass for current month sheet
  */
 class OutgoingSheet {
     sheet: GAS.Spreadsheet.Sheet = spreadsheet.getSheets()[1];
@@ -27,11 +33,10 @@ class OutgoingSheet {
 
     getMostRecentDate() : Date
     {
-        const columnData = outgoing.sheet.getRange("B:B").getValues();
+        const columnData = this.sheet.getRange("B:B").getValues();
         const lastRow = columnData.filter(String).length + 1;
-        const mostRecentDate = new Date( columnData[lastRow][0] );
 
-        return mostRecentDate;
+        return new Date( columnData[lastRow][0] );
     }
 
     setSheet(newSheet: GAS.Spreadsheet.Sheet) : void
@@ -60,7 +65,8 @@ class OutgoingSheet {
         
         const sameDay = Utilities.formatDate(new Date(), "GMT+8", "MM/dd/yyyy");
 
-        outgoing.sheet.getRange( this.getLastRow(),2,1,1 ).setValue(sameDay);
+        this.sheet.getRange(this.getLastRow(), 2, 1, 1)
+            .setValue(sameDay);
     }
 
     /**
@@ -79,11 +85,11 @@ class OutgoingSheet {
     {
         if (this.#isNeedsNewWeek() === true) {
             const lastRow = this.getLastRow();
-            const lastEntryFormat = outgoing.sheet.getRange(
-                lastRow, 1, 1, outgoing.sheet.getLastColumn()
+            const lastEntryFormat = this.sheet.getRange(
+                lastRow, 1, 1, this.sheet.getLastColumn()
                 );
-            const newEntry = outgoing.sheet.getRange(
-                lastRow+1, 1, 1, outgoing.sheet.getLastColumn()
+            const newEntry = this.sheet.getRange(
+                lastRow+1, 1, 1, this.sheet.getLastColumn()
                 );
 
             lastEntryFormat.copyTo(
@@ -99,15 +105,15 @@ class OutgoingSheet {
      */
     #isNeedsNewWeek() : boolean
     {
-        const columnData: any[][] = outgoing.sheet.getRange("B4:B").getValues();
-        const latestEntryDate: Date = new Date(
+        const columnData = this.sheet.getRange("B4:B").getValues();
+        const latestEntryDate = new Date(
             columnData[this.getLastRow() - this.datesRowOffset][0]
             );
-        const latestEntryWeek: string = Utilities.formatDate(
+        const latestEntryWeek = Utilities.formatDate(
             latestEntryDate,
             spreadsheet.getSpreadsheetTimeZone(), 'w'
             );
-        const currentWeek: string = Utilities.formatDate(
+        const currentWeek = Utilities.formatDate(
             new Date(),
             spreadsheet.getSpreadsheetTimeZone(), 'w'
             );
@@ -139,7 +145,7 @@ class OutgoingSheet {
 }
 
 /**
- * Dataclass for master sheet
+ * Dataclass for MASTER SHEET
  */
 class MasterSheet {
     sheet: GAS.Spreadsheet.Sheet = spreadsheet.getSheetByName("MASTER SHEET")!;
@@ -154,8 +160,7 @@ class MasterSheet {
         const hereLastRow = this.getLastRow();
 
         for (var i = 1; i <= masterHeaderLabels.length; i++) {
-            master.sheet
-                .getRange(hereLastRow, i*2 + 1)
+            this.sheet.getRange(hereLastRow, i*2 + 1)
                 .setFormula(
                     `= SUMIF(INCOMING! $C${ totalRow }: $C${ lastRow }, ${ masterHeaderLabels[i-1][0] }$1, INCOMING! $B${ totalRow }: $B${ lastRow })`
                 );
@@ -165,7 +170,8 @@ class MasterSheet {
     addNewRow(newMonthName: string) : void
     {
         this.sheet.insertRowAfter(this.getLastRow());
-        this.sheet.getRange(this.getLastRow()+1, 1).setValue(newMonthName);
+        this.sheet.getRange(this.getLastRow()+1, 1)
+            .setValue(newMonthName);
     }
 
     /**
@@ -179,8 +185,7 @@ class MasterSheet {
         this.#makeAllottedCols(incomingNewRow);
         this.#makeTotalCols();
 
-        master.sheet
-            .getRange(lastRow, 16)
+        this.sheet.getRange(lastRow, 16)
             .setFormula(
                 `= C${ lastRow } - B${ lastRow }`
                 );
@@ -194,8 +199,7 @@ class MasterSheet {
         const lastRow = this.getLastRow();
 
         for (var i = 0; i < masterHeaderLabels.length; i++) {
-            master.sheet
-                .getRange(lastRow, i*2)
+            this.sheet.getRange(lastRow, i*2)
                 .setFormula(
                     `= SUMIF(${ newMonthName }!$E4: $E, ${ masterHeaderLabels[i][0] }$1, ${ newMonthName }!$F4: $F)`
                 );
@@ -210,8 +214,7 @@ class MasterSheet {
         const lastRow = this.getLastRow();
 
         for (var i = 0; i < masterHeaderLabels.length; i++) {
-            master.sheet
-                .getRange(lastRow, i*2 + 1)
+            this.sheet.getRange(lastRow, i*2 + 1)
                 .setFormula(
                     `= SUMIF(INCOMING! $C${ incomingNewRow }: $C, ${ masterHeaderLabels[i][0] }$1, INCOMING! $B${ incomingNewRow }: $B)`
                 );
@@ -233,9 +236,9 @@ class MasterSheet {
             allottedString += `${ masterHeaderLabels[i][1] }${ lastRow } ,`;
         }
 
-        master.sheet.getRange(lastRow, 1).setFormula(`= SUM(${ costString })`);
+        this.sheet.getRange(lastRow, 1).setFormula(`= SUM(${ costString })`);
         
-        master.sheet.getRange(lastRow, 2).setFormula(`= SUM(${ allottedString })`);
+        this.sheet.getRange(lastRow, 2).setFormula(`= SUM(${ allottedString })`);
     }
 }
 
@@ -267,7 +270,7 @@ class IncomingSheet {
     {
         const totalRow = this.getTotalRow();
         const startingRow = this.getLastRow() + 2;
-        const copyDest = incoming.sheet.getRange(startingRow+1, 1, 1, 3);
+        const copyDest = this.sheet.getRange(startingRow+1, 1, 1, 3);
 
         this.sheet.insertRows(startingRow - 1, 5);
         this.sheet.getRange(totalRow, 1, 1, 3).copyTo(copyDest);
