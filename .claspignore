@@ -1,2 +1,13 @@
-**.js
-node_modules/*
+node_modules/
+
+# Compiled JavaScript files (if you push .ts files directly)
+dist/
+
+*.log
+*.tmp
+.git/
+.gitignore
+.claspignore
+.clasp.json
+.env
+.vscode
