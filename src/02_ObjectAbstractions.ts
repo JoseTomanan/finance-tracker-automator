@@ -111,6 +111,9 @@ class OutgoingSheet implements SheetProtocol {
         this.sheet.getRange(this.getLastRow(), Column.B)
             .setValue("--")
             .setHorizontalAlignment("center");
+
+        this.sheet.getRange(this.getLastRow(), Column.E)
+            .clear();
     }
 }
 
