@@ -1,7 +1,7 @@
 /**
  * Dataclass for current month sheet
  */
-class OutgoingSheet {
+class OutgoingSheet implements SheetProtocol {
     sheet: GAS.Spreadsheet.Sheet = spreadsheet.getSheets()[1];
     datesRowOffset: RowNumber = 4;
 
@@ -117,7 +117,7 @@ class OutgoingSheet {
 /**
  * Dataclass for MASTER SHEET
  */
-class MasterSheet {
+class MasterSheet implements SheetProtocol {
     sheet: GAS.Spreadsheet.Sheet = spreadsheet.getSheetByName("MASTER SHEET")!;
 
     getLastRow() : RowNumber
@@ -214,7 +214,7 @@ class MasterSheet {
 /**
  * Dataclass for INCOMING sheet (i.e., incoming funds)
  */
-class IncomingSheet {
+class IncomingSheet implements SheetProtocol {
     sheet: GAS.Spreadsheet.Sheet = spreadsheet.getSheetByName("INCOMING")!;
     newRowOffset: number = 4;
     
