@@ -38,8 +38,8 @@ class OutgoingSheet {
      */
     copyLastRowFormat(offset: number = 0)
     {
-        const currentEntry = this.sheet.getRange(this.getLastRow()-offset, 3);
-        const nextEntry = this.sheet.getRange(this.getLastRow()+1, 3);
+        const currentEntry = this.sheet.getRange(this.getLastRow() - offset, Column.C);
+        const nextEntry = this.sheet.getRange(this.getLastRow()+1, Column.C);
         
         // this.sheet.insertRowAfter(this.getLastRow());
         currentEntry.copyTo(nextEntry);
@@ -103,12 +103,12 @@ class OutgoingSheet {
      */
     labelNewWeek()
     {
-        this.sheet.getRange(this.getLastRow()+1, 4)
+        this.sheet.getRange(this.getLastRow()+1, Column.D)
             .setValue("<~~ NEW WEEK ~~>")
             .setHorizontalAlignment("center")
             .setFontStyle("italic");
 
-        this.sheet.getRange(this.getLastRow(), 2)
+        this.sheet.getRange(this.getLastRow(), Column.B)
             .setValue("--")
             .setHorizontalAlignment("center");
     }
@@ -140,7 +140,7 @@ class MasterSheet {
     addNewRow(newMonthName: string) : void
     {
         this.sheet.insertRowAfter(this.getLastRow());
-        this.sheet.getRange(this.getLastRow()+1, 1)
+        this.sheet.getRange(this.getLastRow()+1, Column.A)
             .setValue(newMonthName);
     }
 
@@ -155,7 +155,7 @@ class MasterSheet {
         this.#makeAllottedCols(incomingNewRow);
         this.#makeTotalCols();
 
-        this.sheet.getRange(lastRow, 16)
+        this.sheet.getRange(lastRow, Column.O)
             .setFormula(`= C${ lastRow } - B${ lastRow }`);
     }
 
@@ -204,9 +204,9 @@ class MasterSheet {
             allottedString += `${ masterHeaderLabels[i][1] }${ lastRow } ,`;
         }
 
-        this.sheet.getRange(lastRow, 1)
+        this.sheet.getRange(lastRow, Column.A)
             .setFormula(`= SUM(${ costString })`);
-        this.sheet.getRange(lastRow, 2)
+        this.sheet.getRange(lastRow, Column.B)
             .setFormula(`= SUM(${ allottedString })`);
     }
 }
@@ -239,14 +239,14 @@ class IncomingSheet {
     {
         const totalRow = this.getTotalRow();
         const startingRow = this.getLastRow() + 2;
-        const copyDest = this.sheet.getRange(startingRow+1, 1, 1, 3);
+        const copyDest = this.sheet.getRange(startingRow+1, Column.A, 1, 3);
 
         this.sheet.insertRows(startingRow - 1, 5);
-        this.sheet.getRange(totalRow, 1, 1, 3)
+        this.sheet.getRange(totalRow, Column.A, 1, 3)
             .copyTo(copyDest);
-        this.sheet.getRange(startingRow, 1)
+        this.sheet.getRange(startingRow, Column.A)
             .setValue(newMonthName);
-        this.sheet.getRange(startingRow + 1, 2)
+        this.sheet.getRange(startingRow + 1, Column.B)
             .setFormula(`= SUM(B${ startingRow + 2 } : B)`);
     }
 
@@ -254,7 +254,7 @@ class IncomingSheet {
     {
         const totalRow = this.getTotalRow();
 
-        this.sheet.getRange(totalRow, 2)
+        this.sheet.getRange(totalRow, Column.B)
             .setFormula(`= SUM(B${ totalRow + 1 } : B${ this.getLastRow() })`);
     }
 }
