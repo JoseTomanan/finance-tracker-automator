@@ -5,11 +5,6 @@ class OutgoingSheet {
     sheet: GAS.Spreadsheet.Sheet = spreadsheet.getSheets()[1];
     datesRowOffset: RowNumber = 4;
 
-    getDates() : Object[][]
-    {
-        return this.sheet.getRange("B:B").getValues();
-    }
-
     getLastRow() : RowNumber
     {
         return this.sheet.getLastRow();
@@ -41,7 +36,7 @@ class OutgoingSheet {
     /**
      * Copy format of last row -- can override with offset from last row
      */
-    copyLastRowFormat(offset : number = 0)
+    copyLastRowFormat(offset: number = 0)
     {
         const currentEntry = this.sheet.getRange(this.getLastRow()-offset, 3);
         const nextEntry = this.sheet.getRange(this.getLastRow()+1, 3);
@@ -54,7 +49,7 @@ class OutgoingSheet {
      * Hooked to addToday();
      * Add new line with today's date -- can override with which row to put in date
      */
-    addNewEntry(row : number = this.getLastRow()) : void
+    addNewEntry(row: number = this.getLastRow()) : void
     {
         this.sheet.getRange(row, 2)
             .setValue(
@@ -108,8 +103,6 @@ class OutgoingSheet {
      */
     labelNewWeek()
     {
-        this.sheet.getRange(this.getLastRow()+1, 5).clear();
-
         this.sheet.getRange(this.getLastRow()+1, 4)
             .setValue("<~~ NEW WEEK ~~>")
             .setHorizontalAlignment("center")
@@ -118,18 +111,6 @@ class OutgoingSheet {
         this.sheet.getRange(this.getLastRow(), 2)
             .setValue("--")
             .setHorizontalAlignment("center");
-    }
-
-    #copyPrevWeekFormat() : void
-    {
-        const lastEntryFormat = this.sheet.getRange(
-            this.getLastRow()-1, 2, 1, 2
-        );
-        const newEntry = this.sheet.getRange(
-            this.getLastRow()+1, 2, 1, 2
-        );
-        
-        lastEntryFormat.copyTo(newEntry);
     }
 }
 

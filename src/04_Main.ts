@@ -8,7 +8,7 @@ incoming = new IncomingSheet();
 
 function onOpen(e: any)
 {
-    // new DayAdder().compareRecentEntry();
+    new DayAdder().compareRecentEntry();
     
     const ui = SpreadsheetApp.getUi();
     ui.createMenu('Methods')
