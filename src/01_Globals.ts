@@ -18,7 +18,7 @@ const masterHeaderLabels: Array<Array<String>> = [
     ];
 
 const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-const userProperties = PropertiesService.getUserProperties();
+const scriptProperties = PropertiesService.getScriptProperties();
 
 var master: MasterSheet;
 var outgoing: OutgoingSheet;

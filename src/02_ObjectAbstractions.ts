@@ -15,16 +15,6 @@ class OutgoingSheet {
         return this.sheet.getLastRow();
     }
 
-    getCurrentEntry() : GAS.Spreadsheet.Range
-    {
-        return this.sheet.getRange(this.getLastRow(), 2, 1, 2);
-    }
-
-    getNextEntry() : GAS.Spreadsheet.Range
-    {
-        return this.sheet.getRange(this.getLastRow()+1, 2, 1, 2);
-    }
-
     getMostRecentDate() : Date
     {
         const columnData = this.sheet.getRange("B:B").getValues();
@@ -49,18 +39,27 @@ class OutgoingSheet {
     }
 
     /**
-     * Hooked to addToday();
-     * Add new line with today's date
+     * Copy format of last row -- can override with offset from last row
      */
-    addNewEntry() : void
+    copyLastRowFormat(offset : number = 0)
     {
-        this.sheet.insertRowAfter(this.getLastRow());
-        this.getCurrentEntry().copyTo(this.getNextEntry());
+        const currentEntry = this.sheet.getRange(this.getLastRow()-offset, 3);
+        const nextEntry = this.sheet.getRange(this.getLastRow()+1, 3);
         
-        const sameDay = Utilities.formatDate(new Date(), "GMT+8", "MM/dd/yyyy");
+        // this.sheet.insertRowAfter(this.getLastRow());
+        currentEntry.copyTo(nextEntry);
+    }
 
-        this.sheet.getRange(this.getLastRow(), 2, 1, 1)
-            .setValue(sameDay);
+    /**
+     * Hooked to addToday();
+     * Add new line with today's date -- can override with which row to put in date
+     */
+    addNewEntry(row : number = this.getLastRow()) : void
+    {
+        this.sheet.getRange(row, 2)
+            .setValue(
+                Utilities.formatDate(new Date(), "GMT+8", "MM/dd/yyyy")
+                );
     }
 
     /**
@@ -76,39 +75,16 @@ class OutgoingSheet {
      */
     isNeedsNewWeek() : boolean
     {
-        const columnData = this.sheet.getRange("B4:B").getValues();
-        const latestEntryDate = new Date(
-            columnData[this.getLastRow() - this.datesRowOffset][0]
-            );
         const latestEntryWeek = Utilities.formatDate(
-            latestEntryDate,
+            this.getMostRecentDate(),
             spreadsheet.getSpreadsheetTimeZone(), 'w'
             );
         const currentWeek = Utilities.formatDate(
             new Date(),
             spreadsheet.getSpreadsheetTimeZone(), 'w'
             );
-        
+
         return latestEntryWeek < currentWeek;
-    }
-
-    /**
-     * Copy formats from previous week
-     */
-    copyFormatFromPrev() : void
-    {
-        /** FOR NEW ENTRY */
-        const lastRow = this.getLastRow();
-        const lastEntryFormat = this.sheet.getRange(
-            lastRow, 1, 1, this.sheet.getLastColumn()
-            );
-        const newEntry = this.sheet.getRange(
-            lastRow+1, 1, 1, this.sheet.getLastColumn()
-            );
-
-        lastEntryFormat.copyTo(
-            newEntry, {formatOnly: true}
-            );
     }
 
     /**
@@ -117,16 +93,43 @@ class OutgoingSheet {
      */
     hideLastWeek(startHideable: string | null) : void
     {
-        const endHideable = this.getLastRow() - this.datesRowOffset + 1;
+        const numRows = this.getLastRow() - this.datesRowOffset - 1;
         
         if ( startHideable !== null ) {
-            this.sheet.hideRows(+startHideable, endHideable);
-
-            this.sheet.getRange(this.getLastRow()+1, 3)
-                .setValue("<~~ NEW WEEK ~~>");
+            this.sheet.hideRows(+startHideable, numRows);
         }
+        else {
+            this.sheet.hideRows(this.datesRowOffset, numRows);
+        }
+    }
+
+    /**
+     * Add new week label
+     */
+    labelNewWeek()
+    {
+        this.sheet.getRange(this.getLastRow()+1, 5).clear();
+
+        this.sheet.getRange(this.getLastRow()+1, 4)
+            .setValue("<~~ NEW WEEK ~~>")
+            .setHorizontalAlignment("center")
+            .setFontStyle("italic");
+
+        this.sheet.getRange(this.getLastRow(), 2)
+            .setValue("--")
+            .setHorizontalAlignment("center");
+    }
+
+    #copyPrevWeekFormat() : void
+    {
+        const lastEntryFormat = this.sheet.getRange(
+            this.getLastRow()-1, 2, 1, 2
+        );
+        const newEntry = this.sheet.getRange(
+            this.getLastRow()+1, 2, 1, 2
+        );
         
-        this.sheet.hideRows(this.datesRowOffset, endHideable);
+        lastEntryFormat.copyTo(newEntry);
     }
 }
 
@@ -172,9 +175,7 @@ class MasterSheet {
         this.#makeTotalCols();
 
         this.sheet.getRange(lastRow, 16)
-            .setFormula(
-                `= C${ lastRow } - B${ lastRow }`
-                );
+            .setFormula(`= C${ lastRow } - B${ lastRow }`);
     }
 
     /**

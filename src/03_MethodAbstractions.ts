@@ -4,6 +4,7 @@
 class DayAdder {
     addToday() : void
     {
+        outgoing.copyLastRowFormat();
         outgoing.addNewEntry();
     }
     
@@ -12,10 +13,9 @@ class DayAdder {
         if (outgoing.isNeedsNewDay() === true) {
             new WeekHider().compareWeek();
             
-            outgoing.addNewEntry();
-            
-            if (outgoing.getMostRecentDate().getMonth() != new Date().getMonth())
+            if (outgoing.getMostRecentDate().getMonth() != new Date().getMonth()) {
                 new MonthAdder().addNewMonth();
+            }
         }
     }
 }
@@ -28,12 +28,17 @@ class WeekHider {
     compareWeek() : void
     {
         if (outgoing.isNeedsNewWeek() === true) {
-            outgoing.copyFormatFromPrev();
             outgoing.hideLastWeek(
-                userProperties.getProperty("CURRENT_WEEK_FIRST_ENTRY")
+                scriptProperties.getProperty("CURRENT_WEEK_FIRST_ENTRY")
                 );
-
-            userProperties.setProperty("CURRENT_WEEK_FIRST_ENTRY", `${ outgoing.getLastRow()+1 }`);
+            outgoing.labelNewWeek();
+            
+            // Logger.log(`BEFORE: ${ scriptProperties.getProperty("CURRENT_WEEK_FIRST_ENTRY") }`);
+            scriptProperties.setProperty("CURRENT_WEEK_FIRST_ENTRY", `${ outgoing.getLastRow()+1 }`);
+            // Logger.log(`AFTER: ${ outgoing.getLastRow()+1 }`)
+            
+            outgoing.copyLastRowFormat(1);
+            outgoing.addNewEntry();
         }
     }
 }
@@ -46,7 +51,7 @@ class MonthAdder {
 
     addNewMonth() : void
     {
-        userProperties.deleteProperty("CURRENT_WEEK_FIRST_ENTRY");
+        scriptProperties.setProperty("CURRENT_WEEK_FIRST_ENTRY", "4");
 
         outgoing.archiveSheet();
         outgoing.setSheet(
