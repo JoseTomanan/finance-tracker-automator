@@ -34,5 +34,6 @@ enum Column {
 }
 
 interface SheetProtocol {
-    getLastRow() : RowNumber
+    sheet: GAS.Spreadsheet.Sheet;
+    getLastRow() : RowNumber;
 }
