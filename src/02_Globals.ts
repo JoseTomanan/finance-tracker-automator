@@ -1,13 +1,4 @@
 /**
- * Alias GAS for GoogleAppsScript
- */
-declare namespace GAS {
-    export import Spreadsheet = GoogleAppsScript.Spreadsheet;
-    export import Script = GoogleAppsScript.Script;
-    export import Utilities = GoogleAppsScript.Utilities;
-}
-
-/**
  * Actual globals
  */
 
