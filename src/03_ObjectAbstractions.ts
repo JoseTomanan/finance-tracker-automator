@@ -34,15 +34,14 @@ class OutgoingSheet implements SheetProtocol {
     }
 
     /**
-     * Copy format of last row -- can override with offset from last row
+     * Format new row with day of week from Column B
      */
-    copyLastRowFormat(offset: number = 0)
+    formatNextRow(offset: number = 0) : void
     {
-        const currentEntry = this.sheet.getRange(this.getLastRow() - offset, Column.C);
-        const nextEntry = this.sheet.getRange(this.getLastRow()+1, Column.C);
-        
-        // this.sheet.insertRowAfter(this.getLastRow());
-        currentEntry.copyTo(nextEntry);
+        const entry: RowNumber = this.getLastRow() + 1 - offset;
+
+        this.sheet.getRange(entry, Column.C)
+            .setFormula(`= TEXT(weekday(B${ entry }), "ddd")`);
     }
 
     /**
@@ -90,7 +89,7 @@ class OutgoingSheet implements SheetProtocol {
     {
         const numRows = this.getLastRow() - this.datesRowOffset - 1;
         
-        if ( startHideable !== null ) {
+        if ( startHideable != null ) {
             this.sheet.hideRows(+startHideable, numRows);
         }
         else {
@@ -231,7 +230,7 @@ class IncomingSheet implements SheetProtocol {
         const dataFirstRow: Object[][] = this.sheet.getDataRange().getValues();
         
         for (var i = this.getLastRow() ; i >= 0 ; i--) {
-            if (dataFirstRow[i][0] === "TOTAL")
+            if (dataFirstRow[i][0] == "TOTAL")
                 return i + 1;
         }
 

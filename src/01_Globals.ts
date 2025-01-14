@@ -10,6 +10,7 @@ declare namespace GAS {
 /**
  * Actual globals
  */
+
 const months: Array<String> = [
     'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'
     ];
@@ -23,17 +24,3 @@ const scriptProperties = PropertiesService.getScriptProperties();
 var master: MasterSheet;
 var outgoing: OutgoingSheet;
 var incoming: IncomingSheet;
-
-/**
- * Project types
- */
-type RowNumber = number;
-enum Column {
-    null = 0, A = 1,
-    B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z
-}
-
-interface SheetProtocol {
-    sheet: GAS.Spreadsheet.Sheet;
-    getLastRow() : RowNumber;
-}
