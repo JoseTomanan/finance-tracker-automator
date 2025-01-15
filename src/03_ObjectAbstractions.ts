@@ -34,26 +34,30 @@ class OutgoingSheet implements SheetProtocol {
     }
 
     /**
-     * Format new row with day of week from Column B
-     */
-    formatNextRow(offset: number = 0) : void
-    {
-        const entry: RowNumber = this.getLastRow() + 1 - offset;
-
-        this.sheet.getRange(entry, Column.C)
-            .setFormula(`= TEXT(weekday(B${ entry }), "ddd")`);
-    }
-
-    /**
      * Hooked to addToday();
-     * Add new line with today's date -- can override with which row to put in date
+     * Add new line with today's date -- optional: expense entry, type
      */
-    addNewEntry(row: number = this.getLastRow()) : void
+    addNewEntry(entry : string = "", entryType: ExpenseType = ExpenseType.NULL) : void
     {
-        this.sheet.getRange(row, 2)
+        this.#formatNewEntry();
+
+        this.sheet.getRange(this.getLastRow(), 2)
             .setValue(
                 Utilities.formatDate(new Date(), "GMT+8", "MM/dd/yyyy")
                 );
+
+        if (entryType != ExpenseType.NULL) {}
+    }
+
+    /**
+     * Format new row with day of week from Column B
+     */
+    #formatNewEntry(offset: number = 0) : void
+    {
+        const entry = this.getLastRow() + 1 - offset;
+
+        this.sheet.getRange(entry, Column.C)
+            .setFormula(`= TEXT(weekday(B${ entry }), "ddd")`);
     }
 
     /**

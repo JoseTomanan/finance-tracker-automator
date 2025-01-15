@@ -4,7 +4,6 @@
 class DayAdder {
     addToday() : void
     {
-        outgoing.formatNextRow();
         outgoing.addNewEntry();
     }
     
@@ -37,7 +36,6 @@ class WeekHider {
             scriptProperties.setProperty("CURRENT_WEEK_FIRST_ENTRY", `${ outgoing.getLastRow()+1 }`);
             // Logger.log(`AFTER: ${ outgoing.getLastRow()+1 }`)
             
-            outgoing.formatNextRow();
             outgoing.addNewEntry();
         }
     }
