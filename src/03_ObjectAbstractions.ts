@@ -103,16 +103,13 @@ class OutgoingSheet implements SheetProtocol {
     labelNewWeek()
     {
         this.sheet.getRange(this.getLastRow()+1, Column.D)
-            .setValue("<~~ NEW WEEK ~~>")
+            .setValue("<-- NEW WEEK -->")
             .setHorizontalAlignment("center")
             .setFontStyle("italic");
 
         this.sheet.getRange(this.getLastRow(), Column.B)
             .setValue("--")
             .setHorizontalAlignment("center");
-
-        this.sheet.getRange(this.getLastRow(), Column.E)
-            .clear();
     }
 }
 
@@ -237,6 +234,18 @@ class IncomingSheet implements SheetProtocol {
         return -1;
     }
 
+    capOffTotalRow(totalRow : RowNumber = this.getTotalRow()) : void
+    {
+        this.sheet.getRange(totalRow, Column.B)
+            .setFormula(`= SUM(B${ totalRow + 1 } : B${ this.getLastRow() })`);
+    }
+
+    hidePrevMonth(startHideable : RowNumber = this.getTotalRow()) : void
+    {
+        const numRows = this.getLastRow() - startHideable;
+        this.sheet.hideRows(startHideable, numRows);
+    }
+
     addNewMonth(newMonthName: string) : void
     {
         const totalRow = this.getTotalRow();
@@ -252,11 +261,6 @@ class IncomingSheet implements SheetProtocol {
             .setFormula(`= SUM(B${ startingRow + 2 } : B)`);
     }
 
-    capOffTotalRow() : void
-    {
-        const totalRow = this.getTotalRow();
-
-        this.sheet.getRange(totalRow, Column.B)
-            .setFormula(`= SUM(B${ totalRow + 1 } : B${ this.getLastRow() })`);
-    }
+    addFundsEntry() : void
+    {}
 }

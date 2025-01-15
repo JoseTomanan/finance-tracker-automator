@@ -49,23 +49,9 @@ class WeekHider {
 class MonthAdder {
     newMonthName: string = `${months[new Date().getMonth()]} ${new Date().getFullYear()}`;
 
-    addNewMonth() : void
+    #resetVars() : void
     {
         scriptProperties.setProperty("CURRENT_WEEK_FIRST_ENTRY", "4");
-
-        outgoing.archiveSheet();
-        outgoing.setSheet(
-            this.#instantiateNewMonth()
-            );
-
-        incoming.capOffTotalRow();
-        incoming.addNewMonth(this.newMonthName);
-
-        master.capPrevAllotted(incoming.getLastRow(), incoming.getTotalRow());
-        master.addNewRow(this.newMonthName);
-        master.makeFormulas(this.newMonthName, incoming.getLastRow() + 4);
-
-        this.#activateNewMonth();
     }
 
     #instantiateNewMonth() : GAS.Spreadsheet.Sheet
@@ -86,5 +72,29 @@ class MonthAdder {
         outgoing.sheet.activate();
         outgoing.sheet.getRange(4, 2)
             .setValue(Utilities.formatDate(new Date(), "GMT+8", "MM/dd/yyyy"));
+    }
+
+    addNewMonth() : void
+    {
+        this.#resetVars();
+        
+        outgoing.archiveSheet();
+        outgoing.setSheet(
+            this.#instantiateNewMonth()
+            );
+
+        const incomingTotalRow = incoming.getTotalRow();
+        
+        incoming.capOffTotalRow(incomingTotalRow);
+        incoming.hidePrevMonth(incomingTotalRow);
+        incoming.addNewMonth(this.newMonthName);
+        
+        incoming.addFundsEntry();
+
+        master.capPrevAllotted(incoming.getLastRow(), incomingTotalRow);
+        master.addNewRow(this.newMonthName);
+        master.makeFormulas(this.newMonthName, incoming.getLastRow() + 4);
+
+        this.#activateNewMonth();
     }
 }
