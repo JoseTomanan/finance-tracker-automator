@@ -31,12 +31,9 @@ class WeekHider {
                 scriptProperties.getProperty("CURRENT_WEEK_FIRST_ENTRY")
                 );
             outgoing.labelNewWeek();
-            
-            // Logger.log(`BEFORE: ${ scriptProperties.getProperty("CURRENT_WEEK_FIRST_ENTRY") }`);
-            scriptProperties.setProperty("CURRENT_WEEK_FIRST_ENTRY", `${ outgoing.getLastRow()+1 }`);
-            // Logger.log(`AFTER: ${ outgoing.getLastRow()+1 }`)
-            
             outgoing.addNewEntry();
+            
+            scriptProperties.setProperty("CURRENT_WEEK_FIRST_ENTRY", `${ outgoing.getLastRow()+1 }`);
         }
     }
 }
