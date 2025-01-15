@@ -37,16 +37,25 @@ class OutgoingSheet implements SheetProtocol {
      * Hooked to addToday();
      * Add new line with today's date -- optional: expense entry, type
      */
-    addNewEntry(entry : string = "", entryType: ExpenseType = ExpenseType.NULL) : void
+    addNewEntry(e: ExpenseEntry = new ExpenseEntry()) : void
     {
         this.#formatNewEntry();
 
-        this.sheet.getRange(this.getLastRow(), 2)
+        const currentRow = this.sheet.getRange(this.getLastRow(), 1, 1, 5)
+            
+        currentRow.getCell(1, Column.B)
             .setValue(
                 Utilities.formatDate(new Date(), "GMT+8", "MM/dd/yyyy")
                 );
 
-        if (entryType != ExpenseType.NULL) {}
+        if (e.type != ExpenseType.NULL) {
+            currentRow.getCell(1, Column.D)
+                .setValue(e.entry);
+            currentRow.getCell(1, Column.E)
+                .setValue(e.type);
+            currentRow.getCell(1, Column.F)
+                .setValue(e.cost);
+        }
     }
 
     /**
