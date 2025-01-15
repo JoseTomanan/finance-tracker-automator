@@ -36,6 +36,7 @@ class OutgoingSheet implements SheetProtocol {
     /**
      * Hooked to addToday();
      * Add new line with today's date -- optional: expense entry, type
+     * << getCell() syntax functionality currently for confirmation! >>
      */
     addNewEntry(e: ExpenseEntry = new ExpenseEntry()) : void
     {
@@ -112,6 +113,7 @@ class OutgoingSheet implements SheetProtocol {
 
     /**
      * Add new week label
+     * << getCell() syntax functionality currently for confirmation! >>
      */
     labelNewWeek()
     {
