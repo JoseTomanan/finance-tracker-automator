@@ -115,14 +115,19 @@ class OutgoingSheet implements SheetProtocol {
      */
     labelNewWeek()
     {
-        this.sheet.getRange(this.getLastRow()+1, Column.D)
+        const row = this.sheet.getRange(this.getLastRow()+1, 1);
+
+        row.getCell(1, Column.B)
+            .setValue("--")
+            .setHorizontalAlignment("center");
+        
+        row.getCell(1, Column.D)
             .setValue("<-- NEW WEEK -->")
             .setHorizontalAlignment("center")
             .setFontStyle("italic");
 
-        this.sheet.getRange(this.getLastRow(), Column.B)
-            .setValue("--")
-            .setHorizontalAlignment("center");
+        row.getCell(1, Column.E)
+            .clearContent();
     }
 }
 
