@@ -14,7 +14,6 @@ enum Column {
     null = 0, A = 1,
     B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z
 }
-
 enum ExpenseType {
     NULL = "",
     DORM = "Dorm",
@@ -27,9 +26,16 @@ enum ExpenseType {
 }
 
 class ExpenseEntry {
-    type: ExpenseType = ExpenseType.NULL;
-    cost: number = 0;
-    entry: string = "";
+    readonly type: ExpenseType;
+    readonly cost: number;
+    readonly entry: string;
+
+    constructor(type: ExpenseType = ExpenseType.NULL, cost: number = 0, entry: string = "")
+    {
+        this.type = type;
+        this.cost = cost;
+        this.entry = entry;
+    }
 }
 
 interface SheetProtocol {
