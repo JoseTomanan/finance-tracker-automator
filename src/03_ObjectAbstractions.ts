@@ -49,13 +49,10 @@ class OutgoingSheet implements SheetProtocol {
                 Utilities.formatDate(new Date(), "GMT+8", "MM/dd/yyyy")
                 );
 
-        if (e.type != ExpenseType.NULL) {
-            currentRow.getCell(1, Column.D)
-                .setValue(e.entry);
-            currentRow.getCell(1, Column.E)
-                .setValue(e.type);
-            currentRow.getCell(1, Column.F)
-                .setValue(e.cost);
+        if (e.tag != Tag.NULL) {
+            currentRow.getCell(1, Column.D).setValue(e.entry);
+            currentRow.getCell(1, Column.E).setValue(e.tag);
+            currentRow.getCell(1, Column.F).setValue(e.cost);
         }
     }
 
@@ -117,7 +114,7 @@ class OutgoingSheet implements SheetProtocol {
      */
     labelNewWeek()
     {
-        const row = this.sheet.getRange(this.getLastRow()+1, 1);
+        const row = this.sheet.getRange(this.getLastRow()+1, 1, 1, 5);
 
         row.getCell(1, Column.B)
             .setValue("--")
@@ -254,10 +251,13 @@ class IncomingSheet implements SheetProtocol {
         return -1;
     }
 
-    capOffTotalRow(totalRow : RowNumber = this.getTotalRow()) : void
+    capOffAndReturnTotal(totalRow : RowNumber = this.getTotalRow()) : number
     {
-        this.sheet.getRange(totalRow, Column.B)
-            .setFormula(`= SUM(B${ totalRow + 1 } : B${ this.getLastRow() })`);
+        const traversable = this.sheet.getRange(totalRow, Column.B);
+        
+        traversable.setFormula(`= SUM(B${ totalRow + 1 } : B${ this.getLastRow() })`);
+
+        return +traversable.getDisplayValue();
     }
 
     hidePrevMonth(startHideable : RowNumber = this.getTotalRow()) : void
@@ -281,6 +281,8 @@ class IncomingSheet implements SheetProtocol {
             .setFormula(`= SUM(B${ startingRow + 2 } : B)`);
     }
 
-    addFundsEntry() : void
-    {}
+    addFundsEntry(e: ExpenseEntry) : void
+    {
+
+    }
 }

@@ -23,7 +23,7 @@ enum Column {
 /**
  * Enum to limit possible entries in Type row
  */
-enum ExpenseType {
+enum Tag {
     NULL = "",
     DORM = "Dorm",
     FOOD = "Food",
@@ -38,14 +38,16 @@ enum ExpenseType {
  * Frozen dataclass for ExpenseEntry
  */
 class ExpenseEntry {
-    readonly type: ExpenseType;
+    readonly tag: Tag;
     readonly cost: number;
     readonly entry: string;
+    readonly isIncoming: boolean;
 
-    constructor(type: ExpenseType = ExpenseType.NULL, cost: number = 0, entry: string = "") {
-        this.type = type;
+    constructor(tag: Tag = Tag.NULL, cost: number = 0, entry: string = "", isIncoming: boolean = false) {
+        this.tag = tag;
         this.cost = cost;
         this.entry = entry;
+        this.isIncoming = isIncoming;
     }
 }
 

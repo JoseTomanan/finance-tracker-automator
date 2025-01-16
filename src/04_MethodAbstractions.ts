@@ -79,12 +79,13 @@ class MonthAdder {
             );
 
         const incomingTotalRow = incoming.getTotalRow();
-        
-        incoming.capOffTotalRow(incomingTotalRow);
+        const remainingFunds = incoming.capOffAndReturnTotal(incomingTotalRow);
+
         incoming.hidePrevMonth(incomingTotalRow);
         incoming.addNewMonth(this.newMonthName);
-        
-        incoming.addFundsEntry();
+        incoming.addFundsEntry(
+            new ExpenseEntry(Tag.SELF, remainingFunds, "overflow from last month", true)
+            );
 
         master.capPrevAllotted(incoming.getLastRow(), incomingTotalRow);
         master.addNewRow(this.newMonthName);
