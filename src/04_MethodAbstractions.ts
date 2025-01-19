@@ -9,7 +9,7 @@ class DayAdder {
     
     compareRecentEntry() : void
     {
-        if (outgoing.isSameDay() == false) {
+        if ( ! outgoing.isSameDay() ) {
             new WeekHider().compareWeek();
             
             if (outgoing.getMostRecentDate().getMonth() != new Date().getMonth()) {
@@ -26,22 +26,31 @@ class DayAdder {
 class WeekHider {
     compareWeek() : void
     {
-        if (outgoing.isSameWeek() == false) {
-            outgoing.hideLastWeek(
-                scriptProperties.getProperty("CURRENT_WEEK_FIRST_ENTRY")
-                );
+        if ( ! outgoing.isSameWeek() ) {
+            this.#hideLastWeek();
+
             outgoing.labelNewWeek();
             outgoing.addNewEntry();
             
-            scriptProperties.setProperty("CURRENT_WEEK_FIRST_ENTRY", `${ outgoing.getLastRow()+1 }`);
+            new PropertyFetcher().setWeekVal( outgoing.getLastRow()+1 );
         }
     }
 
-    #hideLastWeek()
-    {}
+    /**
+     * Hide previous weeks (based on stored key-value)
+     */
+    #hideLastWeek() : void
+    {
+        const startHideable = new PropertyFetcher().getWeekVal();
+        const endHideable = outgoing.getLastRow();
 
-    #labelNewWeek()
-    {}
+        if (startHideable != null) {
+            outgoing.hideRows(+startHideable, endHideable);
+            return;
+        }
+
+        outgoing.hideRows(outgoing.datesRowOffset, endHideable);
+    }
 }
 
 /**
@@ -52,7 +61,7 @@ class MonthAdder {
 
     #resetVars() : void
     {
-        scriptProperties.setProperty("CURRENT_WEEK_FIRST_ENTRY", "4");
+        new PropertyFetcher().setWeekVal(4);
     }
 
     #instantiateNewMonth() : GAS.Spreadsheet.Sheet

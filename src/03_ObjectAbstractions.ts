@@ -1,5 +1,18 @@
 /**
- * Dataclass for current month sheet
+ * High-level abstraction for setting, getting script properties
+ */
+class PropertyFetcher {
+    getWeekVal() {
+        scriptProperties.getProperty("CURRENT_WEEK_FIRST_ENTRY");
+    }
+
+    setWeekVal(row : RowNumber) {
+        scriptProperties.setProperty("CURRENT_WEEK_FIRST_ENTRY", `${ row }`);
+    }
+}
+
+/**
+ * Abstraction for current month sheet
  */
 class OutgoingSheet implements SheetProtocol {
     sheet: GAS.Spreadsheet.Sheet = spreadsheet.getSheets()[1];
@@ -10,21 +23,31 @@ class OutgoingSheet implements SheetProtocol {
         return this.sheet.getLastRow();
     }
 
+    getEntry(row : RowNumber) : GAS.Spreadsheet.Range
+    {
+        return this.sheet.getRange(row, 1, 1, 5);
+    }
+
     getMostRecentDate() : Date
     {
         const columnData = this.sheet.getRange("B:B").getValues();
         const lastRow = columnData.filter(String).length + 1;
-
+        
         return new Date( columnData[lastRow][0] );
     }
-
+    
     setSheet(newSheet: GAS.Spreadsheet.Sheet) : void
     {
         this.sheet = newSheet;
     }
 
+    setCell(e: GAS.Spreadsheet.Range, c : Column, val: string) : void
+    {
+        e.getCell(1, c).setValue(val);
+    }
+
     /** 
-     * Archive current sheet (i.e. hide in Google Sheets) 
+     * High level abstraction for Sheet.active -> Sheet.hideSheet
      */
     archiveSheet() : void
     {
@@ -36,13 +59,12 @@ class OutgoingSheet implements SheetProtocol {
     /**
      * Hooked to addToday();
      * Add new line with today's date -- optional: expense entry, type
-     * << getCell() syntax functionality currently for confirmation! >>
      */
     addNewEntry(e: ExpenseEntry = new ExpenseEntry()) : void
     {
         this.#formatNewEntry();
 
-        const currentRow = this.sheet.getRange(this.getLastRow(), 1, 1, 5)
+        const currentRow = this.getEntry(this.getLastRow());
             
         currentRow.getCell(1, Column.B)
             .setValue(
@@ -56,13 +78,9 @@ class OutgoingSheet implements SheetProtocol {
         }
     }
 
-    /**
-     * Format new row with day of week from Column B
-     */
     #formatNewEntry(offset: number = 0) : void
     {
         const entry = this.getLastRow() + 1 - offset;
-
         this.sheet.getRange(entry, Column.C)
             .setFormula(`= TEXT(weekday(B${ entry }), "ddd")`);
     }
@@ -93,29 +111,19 @@ class OutgoingSheet implements SheetProtocol {
     }
 
     /**
-     * Hide previous weeks;
-     * Unstable -- under construction!
+     * High level abstraction for Sheet.hideRows
      */
-    hideLastWeek(startHideable: string | null) : void
+    hideRows(start: number, end: number) : void
     {
-        var numRows = this.getLastRow() - this.datesRowOffset - 1;
-
-        if (startHideable != null) {
-            numRows -= (+startHideable);
-            this.sheet.hideRows(+startHideable, numRows);
-            return;
-        }
-        
-        this.sheet.hideRows(this.datesRowOffset, numRows);
+        this.sheet.hideRows(start, end-start-1);
     }
 
     /**
      * Add new week label
-     * << getCell() syntax functionality currently for confirmation! >>
      */
     labelNewWeek()
     {
-        const row = this.sheet.getRange(this.getLastRow()+1, 1, 1, 5);
+        const row = this.getEntry(this.getLastRow() + 1);
 
         row.getCell(1, Column.B)
             .setValue("--")
@@ -132,7 +140,7 @@ class OutgoingSheet implements SheetProtocol {
 }
 
 /**
- * Dataclass for MASTER SHEET
+ * Abstraction for MASTER SHEET
  */
 class MasterSheet implements SheetProtocol {
     sheet: GAS.Spreadsheet.Sheet = spreadsheet.getSheetByName("MASTER SHEET")!;
@@ -140,6 +148,11 @@ class MasterSheet implements SheetProtocol {
     getLastRow() : RowNumber
     {
         return this.sheet.getLastRow();
+    }
+
+    getEntry(row : RowNumber) : GAS.Spreadsheet.Range
+    {
+        return this.sheet.getRange(row, 1, 1, Column.R);
     }
 
     capPrevAllotted(lastRow: RowNumber, totalRow: RowNumber) : void
@@ -229,7 +242,7 @@ class MasterSheet implements SheetProtocol {
 }
 
 /**
- * Dataclass for INCOMING sheet (i.e., incoming funds)
+ * Abstraction for INCOMING sheet (i.e., incoming funds)
  */
 class IncomingSheet implements SheetProtocol {
     sheet: GAS.Spreadsheet.Sheet = spreadsheet.getSheetByName("INCOMING")!;
@@ -238,6 +251,11 @@ class IncomingSheet implements SheetProtocol {
     getLastRow() : RowNumber
     {
         return this.sheet.getLastRow();
+    }
+
+    getEntry(row : RowNumber) : GAS.Spreadsheet.Range
+    {
+        return this.sheet.getRange(row, 1, 1, 3);
     }
 
     getTotalRow() : RowNumber
@@ -271,11 +289,10 @@ class IncomingSheet implements SheetProtocol {
     {
         const totalRow = this.getTotalRow();
         const startingRow = this.getLastRow() + 2;
-        const copyDest = this.sheet.getRange(startingRow+1, Column.A, 1, 3);
+        const copyDest = this.getEntry(startingRow+1);
 
-        this.sheet.insertRows(startingRow - 1, 5);
-        this.sheet.getRange(totalRow, Column.A, 1, 3)
-            .copyTo(copyDest);
+        this.getEntry(totalRow).copyTo(copyDest);
+
         this.sheet.getRange(startingRow, Column.A)
             .setValue(newMonthName);
         this.sheet.getRange(startingRow + 1, Column.B)
