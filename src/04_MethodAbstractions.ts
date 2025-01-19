@@ -9,7 +9,7 @@ class DayAdder {
     
     compareRecentEntry() : void
     {
-        if (outgoing.isNeedsNewDay() == true) {
+        if (outgoing.isSameDay() == false) {
             new WeekHider().compareWeek();
             
             if (outgoing.getMostRecentDate().getMonth() != new Date().getMonth()) {
@@ -26,7 +26,7 @@ class DayAdder {
 class WeekHider {
     compareWeek() : void
     {
-        if (outgoing.isNeedsNewWeek() == true) {
+        if (outgoing.isSameWeek() == false) {
             outgoing.hideLastWeek(
                 scriptProperties.getProperty("CURRENT_WEEK_FIRST_ENTRY")
                 );
@@ -36,6 +36,12 @@ class WeekHider {
             scriptProperties.setProperty("CURRENT_WEEK_FIRST_ENTRY", `${ outgoing.getLastRow()+1 }`);
         }
     }
+
+    #hideLastWeek()
+    {}
+
+    #labelNewWeek()
+    {}
 }
 
 /**

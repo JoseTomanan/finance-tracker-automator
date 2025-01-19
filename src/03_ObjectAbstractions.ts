@@ -70,7 +70,7 @@ class OutgoingSheet implements SheetProtocol {
     /**
      * Return whether or not recent entry corresponds to date today
      */
-    isNeedsNewDay() : boolean
+    isSameDay() : boolean
     {
         return this.getMostRecentDate().getDate() != new Date().getDate();
     }
@@ -78,7 +78,7 @@ class OutgoingSheet implements SheetProtocol {
     /**
      * Return whether or not new week is entered (i.e., new Sunday)
      */
-    isNeedsNewWeek() : boolean
+    isSameWeek() : boolean
     {
         const latestEntryWeek = Utilities.formatDate(
             this.getMostRecentDate(),
@@ -103,10 +103,10 @@ class OutgoingSheet implements SheetProtocol {
         if (startHideable != null) {
             numRows -= (+startHideable);
             this.sheet.hideRows(+startHideable, numRows);
+            return;
         }
-        else {
-            this.sheet.hideRows(this.datesRowOffset, numRows);
-        }
+        
+        this.sheet.hideRows(this.datesRowOffset, numRows);
     }
 
     /**
