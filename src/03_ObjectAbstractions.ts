@@ -23,11 +23,6 @@ class OutgoingSheet implements SheetProtocol {
         return this.sheet.getLastRow();
     }
 
-    getEntry(row : RowNumber) : GAS.Spreadsheet.Range
-    {
-        return this.sheet.getRange(row, 1, 1, 5);
-    }
-
     getMostRecentDate() : Date
     {
         const columnData = this.sheet.getRange("B:B").getValues();
@@ -41,9 +36,16 @@ class OutgoingSheet implements SheetProtocol {
         this.sheet = newSheet;
     }
 
-    setCell(e: GAS.Spreadsheet.Range, c : Column, val: string) : void
+    setCellValue(row: RowNumber, col : Column, val: string,
+        isCenter: boolean = false, isItalic: boolean = false) : void
     {
-        e.getCell(1, c).setValue(val);
+        const cell = this.sheet.getRange(row, col).setValue(val);
+
+        if (isCenter)
+            cell.setHorizontalAlignment("center");
+
+        if (isItalic)
+            cell.setFontStyle("italic");
     }
 
     /** 
@@ -64,25 +66,25 @@ class OutgoingSheet implements SheetProtocol {
     {
         this.#formatNewEntry();
 
-        const currentRow = this.getEntry(this.getLastRow());
+        const currentRow = this.getLastRow();
             
-        currentRow.getCell(1, Column.B)
-            .setValue(
-                Utilities.formatDate(new Date(), "GMT+8", "MM/dd/yyyy")
-                );
+        this.setCellValue(currentRow, Column.B,
+            Utilities.formatDate(new Date(), "GMT+8", "MM/dd/yyyy")
+            );
 
         if (e.tag != Tag.NULL) {
-            currentRow.getCell(1, Column.D).setValue(e.entry);
-            currentRow.getCell(1, Column.E).setValue(e.tag);
-            currentRow.getCell(1, Column.F).setValue(e.cost);
+            this.setCellValue(currentRow, Column.D, e.entry);
+            this.setCellValue(currentRow, Column.E, e.tag);
+            this.setCellValue(currentRow, Column.F, `${e.cost}`);
         }
     }
 
     #formatNewEntry(offset: number = 0) : void
     {
         const entry = this.getLastRow() + 1 - offset;
-        this.sheet.getRange(entry, Column.C)
-            .setFormula(`= TEXT(weekday(B${ entry }), "ddd")`);
+        this.setCellValue(entry, Column.C,
+            `= TEXT(weekday(B${ entry }), "ddd")`
+            );
     }
 
     /**
@@ -123,19 +125,10 @@ class OutgoingSheet implements SheetProtocol {
      */
     labelNewWeek()
     {
-        const row = this.getEntry(this.getLastRow() + 1);
+        const row = this.getLastRow() + 1;
 
-        row.getCell(1, Column.B)
-            .setValue("--")
-            .setHorizontalAlignment("center");
-        
-        row.getCell(1, Column.D)
-            .setValue("<-- NEW WEEK -->")
-            .setHorizontalAlignment("center")
-            .setFontStyle("italic");
-
-        row.getCell(1, Column.E)
-            .clearContent();
+        this.setCellValue(row, Column.B, "--", true);
+        this.setCellValue(row, Column.D, "<-- NEW WEEK -->", true, true);
     }
 }
 
@@ -148,11 +141,6 @@ class MasterSheet implements SheetProtocol {
     getLastRow() : RowNumber
     {
         return this.sheet.getLastRow();
-    }
-
-    getEntry(row : RowNumber) : GAS.Spreadsheet.Range
-    {
-        return this.sheet.getRange(row, 1, 1, Column.R);
     }
 
     capPrevAllotted(lastRow: RowNumber, totalRow: RowNumber) : void
@@ -253,10 +241,10 @@ class IncomingSheet implements SheetProtocol {
         return this.sheet.getLastRow();
     }
 
-    getEntry(row : RowNumber) : GAS.Spreadsheet.Range
-    {
-        return this.sheet.getRange(row, 1, 1, 3);
-    }
+    // getEntry(row : RowNumber) : GAS.Spreadsheet.Range
+    // {
+    //     return this.sheet.getRange(row, 1, 1, 3);
+    // }
 
     getTotalRow() : RowNumber
     {
@@ -289,9 +277,10 @@ class IncomingSheet implements SheetProtocol {
     {
         const totalRow = this.getTotalRow();
         const startingRow = this.getLastRow() + 2;
-        const copyDest = this.getEntry(startingRow+1);
+        const copyDest = this.sheet.getRange(startingRow+1, 1, 1, 3);
 
-        this.getEntry(totalRow).copyTo(copyDest);
+        this.sheet.getRange(totalRow, 1, 1, 3)
+            .copyTo(copyDest);
 
         this.sheet.getRange(startingRow, Column.A)
             .setValue(newMonthName);
@@ -300,7 +289,5 @@ class IncomingSheet implements SheetProtocol {
     }
 
     addFundsEntry(e: ExpenseEntry) : void
-    {
-
-    }
+    {}
 }

@@ -57,5 +57,4 @@ class ExpenseEntry {
 interface SheetProtocol {
     sheet: GAS.Spreadsheet.Sheet;
     getLastRow() : RowNumber;
-    getEntry(row : RowNumber) : GAS.Spreadsheet.Range;
 }
