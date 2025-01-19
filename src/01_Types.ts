@@ -54,7 +54,23 @@ class ExpenseEntry {
 /**
  * Interface for sheet-related classes
  */
-interface SheetProtocol {
-    sheet: GAS.Spreadsheet.Sheet;
-    getLastRow() : RowNumber;
+abstract class Sheet {
+    abstract sheet: GAS.Spreadsheet.Sheet;
+
+    getLastRow() : RowNumber
+    {
+        return this.sheet.getLastRow();
+    }
+
+    setCellValue(row: RowNumber, col : Column, val: string,
+        isCenter: boolean = false, isItalic: boolean = false) : void
+    {
+        const cell = this.sheet.getRange(row, col).setValue(val);
+
+        if (isCenter)
+            cell.setHorizontalAlignment("center");
+
+        if (isItalic)
+            cell.setFontStyle("italic");
+    }
 }

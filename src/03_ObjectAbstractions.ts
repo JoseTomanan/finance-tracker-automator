@@ -14,14 +14,9 @@ class PropertyFetcher {
 /**
  * Abstraction for current month sheet
  */
-class OutgoingSheet implements SheetProtocol {
+class OutgoingSheet extends Sheet {
     sheet: GAS.Spreadsheet.Sheet = spreadsheet.getSheets()[1];
     datesRowOffset: RowNumber = 4;
-
-    getLastRow() : RowNumber
-    {
-        return this.sheet.getLastRow();
-    }
 
     getMostRecentDate() : Date
     {
@@ -34,18 +29,6 @@ class OutgoingSheet implements SheetProtocol {
     setSheet(newSheet: GAS.Spreadsheet.Sheet) : void
     {
         this.sheet = newSheet;
-    }
-
-    setCellValue(row: RowNumber, col : Column, val: string,
-        isCenter: boolean = false, isItalic: boolean = false) : void
-    {
-        const cell = this.sheet.getRange(row, col).setValue(val);
-
-        if (isCenter)
-            cell.setHorizontalAlignment("center");
-
-        if (isItalic)
-            cell.setFontStyle("italic");
     }
 
     /** 
@@ -135,13 +118,8 @@ class OutgoingSheet implements SheetProtocol {
 /**
  * Abstraction for MASTER SHEET
  */
-class MasterSheet implements SheetProtocol {
+class MasterSheet extends Sheet {
     sheet: GAS.Spreadsheet.Sheet = spreadsheet.getSheetByName("MASTER SHEET")!;
-
-    getLastRow() : RowNumber
-    {
-        return this.sheet.getLastRow();
-    }
 
     capPrevAllotted(lastRow: RowNumber, totalRow: RowNumber) : void
     {
@@ -232,19 +210,9 @@ class MasterSheet implements SheetProtocol {
 /**
  * Abstraction for INCOMING sheet (i.e., incoming funds)
  */
-class IncomingSheet implements SheetProtocol {
+class IncomingSheet extends Sheet {
     sheet: GAS.Spreadsheet.Sheet = spreadsheet.getSheetByName("INCOMING")!;
     newRowOffset: number = 4;
-    
-    getLastRow() : RowNumber
-    {
-        return this.sheet.getLastRow();
-    }
-
-    // getEntry(row : RowNumber) : GAS.Spreadsheet.Range
-    // {
-    //     return this.sheet.getRange(row, 1, 1, 3);
-    // }
 
     getTotalRow() : RowNumber
     {
@@ -284,6 +252,7 @@ class IncomingSheet implements SheetProtocol {
 
         this.sheet.getRange(startingRow, Column.A)
             .setValue(newMonthName);
+
         this.sheet.getRange(startingRow + 1, Column.B)
             .setFormula(`= SUM(B${ startingRow + 2 }:B)`);
     }
