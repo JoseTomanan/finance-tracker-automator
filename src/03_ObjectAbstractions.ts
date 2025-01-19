@@ -98,9 +98,10 @@ class OutgoingSheet implements SheetProtocol {
      */
     hideLastWeek(startHideable: string | null) : void
     {
-        const numRows = this.getLastRow() - this.datesRowOffset - 1;
-        
-        if ( startHideable != null ) {
+        var numRows = this.getLastRow() - this.datesRowOffset - 1;
+
+        if (startHideable != null) {
+            numRows -= (+startHideable);
             this.sheet.hideRows(+startHideable, numRows);
         }
         else {
@@ -185,7 +186,7 @@ class MasterSheet implements SheetProtocol {
         for (var i = 0; i < masterHeaderLabels.length; i++) {
             this.sheet.getRange(lastRow, i*2)
                 .setFormula(
-                    `= SUMIF(${ newMonthName }!$E4: $E, ${ masterHeaderLabels[i][0] }$1, ${ newMonthName }!$F4: $F)`
+                    `= SUMIF(${ newMonthName }!$E4: $E, ${ masterHeaderLabels[i][0] }$1, ${ newMonthName }!$F4:$F)`
                 );
         }
     }
@@ -200,7 +201,7 @@ class MasterSheet implements SheetProtocol {
         for (var i = 0; i < masterHeaderLabels.length; i++) {
             this.sheet.getRange(lastRow, i*2 + 1)
                 .setFormula(
-                    `= SUMIF(INCOMING! $C${ incomingNewRow }: $C, ${ masterHeaderLabels[i][0] }$1, INCOMING! $B${ incomingNewRow }: $B)`
+                    `= SUMIF(INCOMING! $C${ incomingNewRow }:$C, ${ masterHeaderLabels[i][0] }$1, INCOMING! $B${ incomingNewRow }:$B)`
                 );
         }
     }
@@ -278,7 +279,7 @@ class IncomingSheet implements SheetProtocol {
         this.sheet.getRange(startingRow, Column.A)
             .setValue(newMonthName);
         this.sheet.getRange(startingRow + 1, Column.B)
-            .setFormula(`= SUM(B${ startingRow + 2 } : B)`);
+            .setFormula(`= SUM(B${ startingRow + 2 }:B)`);
     }
 
     addFundsEntry(e: ExpenseEntry) : void
