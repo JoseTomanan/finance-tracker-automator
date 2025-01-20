@@ -1,22 +1,27 @@
-My Personal Money Tracker
+My personal finances tracker
 ===
 
-Hi! These are the macros I use to automate methods inside my personal money tracker
-(separate from the money tracker itself, which is in Google Sheets).
+Hi! This repository contains the macros I use to automate methods inside my personal finances tracker
+(separate from the tracker itself, which is in Google Sheets; linked below).
 
-I used the SOLID principles, as well as the design patterns I have learned from **CS 150: Programming Languages**, to make this code easy to add onto, and easy to study/review.
+I used the SOLID principles, as well as the design patterns I have learned from ***CS 150: Programming Languages***, to make this code easy to add onto, and easy to study/review.
 To make this possible, I use TypeScript (instead of JavaScript) to be able to utilize many of the theoretical concepts taught in the course.
 
 I also tried my best to document this repository as thoroughly as possible, as well as make it as readable as possible.
 Feel free to stroll around!
 
-Template Link
+Object hierarchy
+===
+
+*Under construction! Thank you for your patience <3*
+
+Template link
 ===
 
 The reuseable duplicateable Google Sheets file is still under construction!
 Thank you for your patience <3
 
-Future Plans
+Future plans
 ===
 
 In the future, I intend to:
