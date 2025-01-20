@@ -4,12 +4,12 @@
 class DayAdder {
     addToday() : void
     {
-        outgoing.addNewEntry();
+        outgoing.addNewExpense();
     }
     
     compareRecentEntry() : void
     {
-        if ( ! outgoing.isSameDay() ) {
+        if ( outgoing.isNewDay() ) {
             new WeekHider().compareWeek();
             
             if (outgoing.getMostRecentDate().getMonth() != new Date().getMonth()) {
@@ -26,11 +26,11 @@ class DayAdder {
 class WeekHider {
     compareWeek() : void
     {
-        if ( ! outgoing.isSameWeek() ) {
+        if ( outgoing.isNewWeek() ) {
             this.#hideLastWeek();
+            this.#labelNewWeek();
 
-            outgoing.labelNewWeek();
-            outgoing.addNewEntry();
+            outgoing.addNewExpense();
             
             new PropertyFetcher().setWeekVal( outgoing.getLastRow()+1 );
         }
@@ -45,11 +45,19 @@ class WeekHider {
         const endHideable = outgoing.getLastRow();
 
         if (startHideable != null) {
-            outgoing.hideRows(+startHideable, endHideable);
+            outgoing.hideRowSpan(+startHideable, endHideable);
             return;
         }
 
-        outgoing.hideRows(outgoing.datesRowOffset, endHideable);
+        outgoing.hideRowSpan(outgoing.datesRowOffset, endHideable);
+    }
+
+    #labelNewWeek()
+    {
+        const useableRow = outgoing.getLastRow() + 1;
+
+        outgoing.setCellValue(useableRow, Column.B, "--", true);
+        outgoing.setCellValue(useableRow, Column.D, "<-- NEW WEEK -->", true, true);
     }
 }
 
@@ -59,9 +67,32 @@ class WeekHider {
 class MonthAdder {
     newMonthName: string = `${months[new Date().getMonth()]} ${new Date().getFullYear()}`;
 
-    #resetVars() : void
+    addNewMonth() : void
     {
         new PropertyFetcher().setWeekVal(4);
+        
+        outgoing.archiveSheet();
+        outgoing.setSheet(
+            this.#instantiateNewMonth()
+            );
+
+        const incomingTotalRow = incoming.getTotalRow();
+        const remainingFunds = incoming.capOffAndReturnTotal(incomingTotalRow);
+
+        incoming.hidePrevMonth(incomingTotalRow);
+        incoming.initiateNewMonth(this.newMonthName);
+        incoming.addFundsEntry(
+            new ExpenseEntry(Tag.SELF, remainingFunds, "overflow from last month", true)
+            );
+
+        this.#capMasterPrevAllotted(incoming.getLastRow(), incomingTotalRow);
+        
+        master.addRow();
+        master.setCellValue(master.getLastRow()+1, Column.A, this.newMonthName);
+
+        master.makeFormulas(this.newMonthName, incoming.getLastRow() + 4);
+
+        this.#activateNewMonth();
     }
 
     #instantiateNewMonth() : GAS.Spreadsheet.Sheet
@@ -77,35 +108,22 @@ class MonthAdder {
         return returnable;
     }
 
+    #capMasterPrevAllotted(lastRow: RowNumber, totalRow: RowNumber) : void
+    {
+        const hereLastRow = master.getLastRow();
+
+        for (var i = 0; i < masterHeaderLabels.length; i++) {
+            master.setCellValue(
+                hereLastRow, i*2 + 1,
+                `= SUMIF(INCOMING! $C${ totalRow }: $C${ lastRow }, ${ masterHeaderLabels[i][0] }$1, INCOMING! $B${ totalRow }: $B${ lastRow })`
+                );
+        }
+    }
+
     #activateNewMonth() : void
     {
         outgoing.sheet.activate();
         outgoing.sheet.getRange(4, 2)
             .setValue(Utilities.formatDate(new Date(), "GMT+8", "MM/dd/yyyy"));
-    }
-
-    addNewMonth() : void
-    {
-        this.#resetVars();
-        
-        outgoing.archiveSheet();
-        outgoing.setSheet(
-            this.#instantiateNewMonth()
-            );
-
-        const incomingTotalRow = incoming.getTotalRow();
-        const remainingFunds = incoming.capOffAndReturnTotal(incomingTotalRow);
-
-        incoming.hidePrevMonth(incomingTotalRow);
-        incoming.addNewMonth(this.newMonthName);
-        incoming.addFundsEntry(
-            new ExpenseEntry(Tag.SELF, remainingFunds, "overflow from last month", true)
-            );
-
-        master.capPrevAllotted(incoming.getLastRow(), incomingTotalRow);
-        master.addNewRow(this.newMonthName);
-        master.makeFormulas(this.newMonthName, incoming.getLastRow() + 4);
-
-        this.#activateNewMonth();
     }
 }

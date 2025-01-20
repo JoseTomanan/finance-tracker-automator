@@ -62,15 +62,32 @@ abstract class Sheet {
         return this.sheet.getLastRow();
     }
 
-    setCellValue(row: RowNumber, col : Column, val: string,
-        isCenter: boolean = false, isItalic: boolean = false) : void
+    setCellValue(r: RowNumber, c: Column, val: string, isCenter: boolean = false, isItalic: boolean = false) : void
     {
-        const cell = this.sheet.getRange(row, col).setValue(val);
+        const cell = this.sheet.getRange(r,c).setValue(val);
 
         if (isCenter)
             cell.setHorizontalAlignment("center");
 
         if (isItalic)
             cell.setFontStyle("italic");
+    }
+
+    clearCell(row: RowNumber, col : Column)
+    {
+        this.sheet.getRange(row, col).clear();
+    }
+
+    addRow()
+    {
+        this.sheet.insertRowAfter(this.getLastRow());
+    }
+
+    /**
+     * High level abstraction for Sheet.hideRows
+     */
+    hideRowSpan(start: number, end: number) : void
+    {
+        this.sheet.hideRows(start, end-start-1);
     }
 }

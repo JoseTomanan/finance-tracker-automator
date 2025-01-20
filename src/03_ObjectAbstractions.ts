@@ -45,9 +45,9 @@ class OutgoingSheet extends Sheet {
      * Hooked to addToday();
      * Add new line with today's date -- optional: expense entry, type
      */
-    addNewEntry(e: ExpenseEntry = new ExpenseEntry()) : void
+    addNewExpense(e: ExpenseEntry = new ExpenseEntry()) : void
     {
-        this.#formatNewEntry();
+        this.#formatNewExpense();
 
         const currentRow = this.getLastRow();
             
@@ -62,7 +62,7 @@ class OutgoingSheet extends Sheet {
         }
     }
 
-    #formatNewEntry(offset: number = 0) : void
+    #formatNewExpense(offset: number = 0) : void
     {
         const entry = this.getLastRow() + 1 - offset;
         this.setCellValue(entry, Column.C,
@@ -73,7 +73,7 @@ class OutgoingSheet extends Sheet {
     /**
      * Return whether or not recent entry corresponds to date today
      */
-    isSameDay() : boolean
+    isNewDay() : boolean
     {
         return this.getMostRecentDate().getDate() != new Date().getDate();
     }
@@ -81,7 +81,7 @@ class OutgoingSheet extends Sheet {
     /**
      * Return whether or not new week is entered (i.e., new Sunday)
      */
-    isSameWeek() : boolean
+    isNewWeek() : boolean
     {
         const latestEntryWeek = Utilities.formatDate(
             this.getMostRecentDate(),
@@ -94,25 +94,6 @@ class OutgoingSheet extends Sheet {
 
         return latestEntryWeek < currentWeek;
     }
-
-    /**
-     * High level abstraction for Sheet.hideRows
-     */
-    hideRows(start: number, end: number) : void
-    {
-        this.sheet.hideRows(start, end-start-1);
-    }
-
-    /**
-     * Add new week label
-     */
-    labelNewWeek()
-    {
-        const row = this.getLastRow() + 1;
-
-        this.setCellValue(row, Column.B, "--", true);
-        this.setCellValue(row, Column.D, "<-- NEW WEEK -->", true, true);
-    }
 }
 
 /**
@@ -120,25 +101,6 @@ class OutgoingSheet extends Sheet {
  */
 class MasterSheet extends Sheet {
     sheet: GAS.Spreadsheet.Sheet = spreadsheet.getSheetByName("MASTER SHEET")!;
-
-    capPrevAllotted(lastRow: RowNumber, totalRow: RowNumber) : void
-    {
-        const hereLastRow = this.getLastRow();
-
-        for (var i = 0; i < masterHeaderLabels.length; i++) {
-            this.sheet.getRange(hereLastRow, i*2 + 1)
-                .setFormula(
-                    `= SUMIF(INCOMING! $C${ totalRow }: $C${ lastRow }, ${ masterHeaderLabels[i][0] }$1, INCOMING! $B${ totalRow }: $B${ lastRow })`
-                );
-        }
-    }
-
-    addNewRow(newMonthName: string) : void
-    {
-        this.sheet.insertRowAfter(this.getLastRow());
-        this.sheet.getRange(this.getLastRow()+1, Column.A)
-            .setValue(newMonthName);
-    }
 
     /**
      * Set formulas for the new month row (cost, alloted, total, on hand)
@@ -151,8 +113,7 @@ class MasterSheet extends Sheet {
         this.#makeAllottedCols(incomingNewRow);
         this.#makeTotalCols();
 
-        this.sheet.getRange(lastRow, Column.O)
-            .setFormula(`= C${ lastRow } - B${ lastRow }`);
+        this.setCellValue(lastRow, Column.O, `= C${ lastRow } - B${ lastRow }`);
     }
 
     /**
@@ -241,7 +202,7 @@ class IncomingSheet extends Sheet {
         this.sheet.hideRows(startHideable, numRows);
     }
 
-    addNewMonth(newMonthName: string) : void
+    initiateNewMonth(newMonthName: string) : void
     {
         const totalRow = this.getTotalRow();
         const startingRow = this.getLastRow() + 2;
@@ -250,13 +211,18 @@ class IncomingSheet extends Sheet {
         this.sheet.getRange(totalRow, 1, 1, 3)
             .copyTo(copyDest);
 
-        this.sheet.getRange(startingRow, Column.A)
-            .setValue(newMonthName);
-
-        this.sheet.getRange(startingRow + 1, Column.B)
-            .setFormula(`= SUM(B${ startingRow + 2 }:B)`);
+        this.setCellValue(startingRow, Column.A, newMonthName);
+        this.setCellValue(startingRow+1, Column.B, `= SUM(B${ startingRow + 2 }:B)`);
     }
 
     addFundsEntry(e: ExpenseEntry) : void
-    {}
+    {
+        if ( e.isIncoming ) {
+            const newRow = this.getLastRow()+1;
+
+            this.setCellValue(newRow, Column.A, e.entry);
+            this.setCellValue(newRow, Column.B, `${e.cost}`);
+            this.setCellValue(newRow, Column.C, e.tag);
+        }
+    }
 }
