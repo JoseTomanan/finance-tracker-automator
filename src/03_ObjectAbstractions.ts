@@ -2,10 +2,16 @@
  * High-level abstraction for setting, getting script properties
  */
 class PropertyFetcher {
+    /**
+     * Return CURRENT_WEEK_FIRST_ENTRY
+     */
     getWeekVal() {
         scriptProperties.getProperty("CURRENT_WEEK_FIRST_ENTRY");
     }
 
+    /**
+     * Set CURRENT_WEEK_FIRST_ENTRY to new value
+     */
     setWeekVal(row : RowNumber) {
         scriptProperties.setProperty("CURRENT_WEEK_FIRST_ENTRY", `${ row }`);
     }
@@ -48,6 +54,7 @@ class OutgoingSheet extends Sheet {
     addNewExpense(e: ExpenseEntry = new ExpenseEntry()) : void
     {
         this.#formatNewExpense();
+        this.addRow();
 
         const currentRow = this.getLastRow();
             
@@ -60,6 +67,7 @@ class OutgoingSheet extends Sheet {
             this.setCellValue(currentRow, Column.E, e.tag);
             this.setCellValue(currentRow, Column.F, `${e.cost}`);
         }
+
     }
 
     #formatNewExpense(offset: number = 0) : void

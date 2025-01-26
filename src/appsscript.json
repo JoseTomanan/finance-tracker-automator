@@ -9,10 +9,6 @@
         "menuName": "New day (from previous day)",
         "functionName": "New DayAdder().addToday()",
         "defaultShortcut": "Ctrl+Alt+Shift+2"
-      },
-      {
-        "menuName": "Duplicate day",
-        "functionName": "Duplicateday"
       }
     ]
   },

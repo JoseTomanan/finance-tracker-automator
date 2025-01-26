@@ -32,7 +32,7 @@ class WeekHider {
 
             outgoing.addNewExpense();
             
-            new PropertyFetcher().setWeekVal( outgoing.getLastRow()+1 );
+            new PropertyFetcher().setWeekVal(outgoing.getLastRow());
         }
     }
 
@@ -46,18 +46,17 @@ class WeekHider {
 
         if (startHideable != null) {
             outgoing.hideRowSpan(+startHideable, endHideable);
-            return;
         }
-
-        outgoing.hideRowSpan(outgoing.datesRowOffset, endHideable);
+        else {
+            outgoing.hideRowSpan(outgoing.datesRowOffset, endHideable);
+        }
     }
 
     #labelNewWeek()
     {
         const useableRow = outgoing.getLastRow() + 1;
 
-        outgoing.setCellValue(useableRow, Column.B, "--", true);
-        outgoing.setCellValue(useableRow, Column.D, "<-- NEW WEEK -->", true, true);
+        outgoing.setCellValue(useableRow, Column.D, "<-- NEW WEEK -->");
     }
 }
 

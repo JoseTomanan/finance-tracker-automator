@@ -62,15 +62,15 @@ abstract class Sheet {
         return this.sheet.getLastRow();
     }
 
-    setCellValue(r: RowNumber, c: Column, val: string, isCenter: boolean = false, isItalic: boolean = false) : void
+    setCellValue(r: RowNumber, c: Column, val: string) : void
     {
         const cell = this.sheet.getRange(r,c).setValue(val);
 
-        if (isCenter)
-            cell.setHorizontalAlignment("center");
+        // if (isCenter)
+        //     cell.setHorizontalAlignment("center");
 
-        if (isItalic)
-            cell.setFontStyle("italic");
+        // if (isItalic)
+        //     cell.setFontStyle("italic");
     }
 
     clearCell(row: RowNumber, col : Column)
