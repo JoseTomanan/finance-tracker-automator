@@ -65,12 +65,6 @@ abstract class Sheet {
     setCellValue(r: RowNumber, c: Column, val: string) : void
     {
         const cell = this.sheet.getRange(r,c).setValue(val);
-
-        // if (isCenter)
-        //     cell.setHorizontalAlignment("center");
-
-        // if (isItalic)
-        //     cell.setFontStyle("italic");
     }
 
     clearCell(row: RowNumber, col : Column)
