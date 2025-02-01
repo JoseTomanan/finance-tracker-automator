@@ -113,7 +113,7 @@ class MasterSheet extends Sheet {
         this.#makeAllottedCols(incomingNewRow);
         this.#makeTotalCols();
 
-        this.setCellValue(lastRow, Column.O, `= C${ lastRow } - B${ lastRow }`);
+        this.setCellValue(lastRow, Column.D, `= C${ lastRow } - B${ lastRow }`);
     }
 
     /**
@@ -124,9 +124,9 @@ class MasterSheet extends Sheet {
         const lastRow = this.getLastRow();
 
         for (var i = 0; i < masterHeaderLabels.length; i++) {
-            this.sheet.getRange(lastRow, i*2)
+            this.sheet.getRange(lastRow, Column.E + i*2)
                 .setFormula(
-                    `= SUMIF(${ newMonthName }!$E4: $E, ${ masterHeaderLabels[i][0] }$1, ${ newMonthName }!$F4:$F)`
+                    `= SUMIF('${ newMonthName }'!$E4:$E, ${ masterHeaderLabels[i][0] }$1, '${ newMonthName }'!$F4:$F)`
                 );
         }
     }
@@ -139,7 +139,7 @@ class MasterSheet extends Sheet {
         const lastRow = this.getLastRow();
 
         for (var i = 0; i < masterHeaderLabels.length; i++) {
-            this.sheet.getRange(lastRow, i*2 + 1)
+            this.sheet.getRange(lastRow, Column.E + i*2 + 1)
                 .setFormula(
                     `= SUMIF(INCOMING! $C${ incomingNewRow }:$C, ${ masterHeaderLabels[i][0] }$1, INCOMING! $B${ incomingNewRow }:$B)`
                 );
@@ -161,9 +161,9 @@ class MasterSheet extends Sheet {
             allottedString += `${ masterHeaderLabels[i][1] }${ lastRow } ,`;
         }
 
-        this.sheet.getRange(lastRow, Column.A)
-            .setFormula(`= SUM(${ costString })`);
         this.sheet.getRange(lastRow, Column.B)
+            .setFormula(`= SUM(${ costString })`);
+        this.sheet.getRange(lastRow, Column.C)
             .setFormula(`= SUM(${ allottedString })`);
     }
 }

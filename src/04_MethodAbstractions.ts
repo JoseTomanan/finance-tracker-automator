@@ -75,22 +75,22 @@ class MonthAdder {
             this.#instantiateNewMonth()
             );
 
-        const incomingTotalRow = incoming.getTotalRow();
+        // const incomingTotalRow = incoming.getTotalRow();
 
-        if (incomingTotalRow == -1) {
-            console.log("ERROR: getTotalRow returns nothing")
-            return;
-        }
+        // if (incomingTotalRow == -1) {
+        //     console.log("ERROR: getTotalRow returns nothing")
+        //     return;
+        // }
 
-        const remainingFunds = incoming.capOffAndReturnTotal(incomingTotalRow);
+        // const remainingFunds = incoming.capOffAndReturnTotal(incomingTotalRow);
 
-        incoming.hidePrevMonth(incomingTotalRow);
-        incoming.initiateNewMonth(this.newMonthName);
-        incoming.addFundsEntry(
-            new ExpenseEntry(Tag.SELF, remainingFunds, "overflow from last month", true)
-            );
+        // incoming.hidePrevMonth(incomingTotalRow);
+        // incoming.initiateNewMonth(this.newMonthName);
+        // incoming.addFundsEntry(
+        //     new ExpenseEntry(Tag.SELF, remainingFunds, "overflow from last month", true)
+        //     );
 
-        this.#capMasterPrevAllotted(incoming.getLastRow(), incomingTotalRow);
+        // this.#capMasterPrevAllotted(incoming.getLastRow(), incomingTotalRow);
         
         master.addRow();
         master.setCellValue(master.getLastRow()+1, Column.A, this.newMonthName);
