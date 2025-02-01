@@ -76,6 +76,12 @@ class MonthAdder {
             );
 
         const incomingTotalRow = incoming.getTotalRow();
+
+        if (incomingTotalRow == -1) {
+            console.log("ERROR: getTotalRow returns nothing")
+            return;
+        }
+
         const remainingFunds = incoming.capOffAndReturnTotal(incomingTotalRow);
 
         incoming.hidePrevMonth(incomingTotalRow);

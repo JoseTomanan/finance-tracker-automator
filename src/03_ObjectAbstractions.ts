@@ -53,7 +53,6 @@ class OutgoingSheet extends Sheet {
      */
     addNewExpense(e: ExpenseEntry = new ExpenseEntry()) : void
     {
-        this.#formatNewExpense();
         this.addRow();
 
         const currentRow = this.getLastRow();
@@ -62,20 +61,13 @@ class OutgoingSheet extends Sheet {
             Utilities.formatDate(new Date(), "GMT+8", "MM/dd/yyyy")
             );
 
-        if (e.tag != Tag.NULL) {
+        if (e.tag != Tag.NULL)
+        {
             this.setCellValue(currentRow, Column.D, e.entry);
             this.setCellValue(currentRow, Column.E, e.tag);
             this.setCellValue(currentRow, Column.F, `${e.cost}`);
         }
 
-    }
-
-    #formatNewExpense(offset: number = 0) : void
-    {
-        const entry = this.getLastRow() + 1 - offset;
-        this.setCellValue(entry, Column.C,
-            `= TEXT(weekday(B${ entry }), "ddd")`
-            );
     }
 
     /**
@@ -186,10 +178,12 @@ class IncomingSheet extends Sheet {
     getTotalRow() : RowNumber
     {
         const dataFirstRow: Object[][] = this.sheet.getDataRange().getValues();
+        console.log(dataFirstRow);
         
-        for (var i = this.getLastRow() ; i >= 0 ; i--) {
-            if (dataFirstRow[i][0] == "TOTAL")
+        for (var i = this.getLastRow()+1 ; i > 0 ; i--) {
+            if (dataFirstRow[i][0] == "TOTAL") {
                 return i + 1;
+            }
         }
 
         return -1;
