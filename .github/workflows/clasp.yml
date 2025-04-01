@@ -9,13 +9,11 @@ jobs:
   push:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./src
 
     steps:
-    - name: Change to src directory
-      run: |
-        ls
-        cd ../src
-
     - name: Add Google credentials, directory
       uses: daikikatsuragawa/clasp-action@v1.1.0
       with:
@@ -28,4 +26,6 @@ jobs:
         command: 'push'
 
     - name: Push using Clasp
-      run: clasp push -f
+      run: |
+        cd ..
+        clasp push -f
