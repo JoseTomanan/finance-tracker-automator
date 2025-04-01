@@ -1,0 +1,27 @@
+name: Push to Apps Script
+
+on:
+  push:
+    branches: 
+      - "main"
+
+jobs:
+  push:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up Clasp Action
+      uses: daikikatsuragawa/clasp-action@v1.1.0
+      with:
+        accessToken: ya29.a0AeXRPp6FzLrLUqX9HG-rSKkuGLWSeWE16fne_zTmDshqdJ2zcngclav6a5Tfu3CNUMbsKlpD4VEP-M_DEYAmGIx6-FeoAivWHhgMHYR36JejU3xoZNWrp4qQKCT8RdE3BmSQUyO6bvtUPqlBUVWNypsMduGsENYMbi834bnqXAsaCgYKAVgSARISFQHGX2MioDALD-sHRL6R8vq82kP3cQ0178
+        idToken: eyJhbGciOiJSUzI1NiIsImtpZCI6IjgyMWYzYmM2NmYwNzUxZjc4NDA2MDY3OTliMWFkZjllOWZiNjBkZmIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIxMDcyOTQ0OTA1NDk5LXZtMnYyaTVkdm4wYTBkMm80Y2EzNmkxdmdlOGN2Ym4wLmFwcHMuZ29vZ2xldXNlcmNvbnRlbnQuY29tIiwiYXVkIjoiMTA3Mjk0NDkwNTQ5OS12bTJ2Mmk1ZHZuMGEwZDJvNGNhMzZpMXZnZThjdmJuMC5hcHBzLmdvb2dsZXVzZXJjb250ZW50LmNvbSIsInN1YiI6IjEwMTY4NDY3MjE5MTkxNTQ2MDQ2NyIsImhkIjoidXAuZWR1LnBoIiwiZW1haWwiOiJqZHRvbWFuYW5AdXAuZWR1LnBoIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImF0X2hhc2giOiJXaHJHUkNKa3ZUT0RZZWU3eWdoWVhnIiwibmFtZSI6Ikpvc2UgRXJuZXN0byBUb21hbmFuIiwicGljdHVyZSI6Imh0dHBzOi8vbGgzLmdvb2dsZXVzZXJjb250ZW50LmNvbS9hL0FDZzhvY0tYY2QtRjRJeXlYempuOEp4Rmpjb0FYYVdTdXdqeDMtSjBmMnd2S1hNbzE5RmZDbmtKPXM5Ni1jIiwiZ2l2ZW5fbmFtZSI6Ikpvc2UgRXJuZXN0byIsImZhbWlseV9uYW1lIjoiVG9tYW5hbiIsImlhdCI6MTc0MzQ3OTE5NSwiZXhwIjoxNzQzNDgyNzk1fQ.f-ywsnZ_cdYw_sA7zMjCkSIR4qnnUJuMKRLWQSZOp8wAWPVGnGHIos6rjeq5sY3u-CGjCbjgPGhRJZ8L5-l_Wi0FcG8rsxWtUI0Y9DKqmQqo8UoMNPG2smXBQqp32pn-VC-oEGOtLwlFGjXP9PTVVDomMboLvzkzslp-ratvu4PcbdJe6MwgczkagmnA8CGKbzz0SSiFbgMteA8_X7ZmwqKELHLJTcns0VcyCzbbMkrbV54kdqTG8W-DwCFYDokxoWiKRikBuSfmy_06nx0uZG_dfv8mYavYOhpKopg70RwSCB5qYCjOwl_PbVVkp23THD1mO2KMuHlLdGpe7MlLvQ
+        refreshToken: 1//0e8Lr552JdU22CgYIARAAGA4SNwF-L9IrTG3MfsTn9lYK1vuig_b-uruE8rinGQ3YJ4YW_j6dUfhN_Z8bUUSgVFAke-NjWRJ0PxQ
+        clientId: 1072944905499-vm2v2i5dvn0a0d2o4ca36i1vge8cvbn0.apps.googleusercontent.com
+        clientSecret: v6V3fKV_zWU7iw1DrpO1rknX
+        scriptId: 1zY2UgBwzHQPqfW4zOvqc4rh3Es23yj7OLDcWhpWtEysP7ipjnhABHog_
+        rootDir: src
+        command: 'push'
+
+    - name: Push using Clasp
+      run: clasp push -f
