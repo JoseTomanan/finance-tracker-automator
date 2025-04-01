@@ -1,4 +1,4 @@
-name: Push to Apps Script
+name: Clasp Actions
 
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
         working-directory: ./src
 
     steps:
-    - name: Add Google credentials, directory
+    - name: Push
       uses: daikikatsuragawa/clasp-action@v1.1.0
       with:
         accessToken: ya29.a0AeXRPp6FzLrLUqX9HG-rSKkuGLWSeWE16fne_zTmDshqdJ2zcngclav6a5Tfu3CNUMbsKlpD4VEP-M_DEYAmGIx6-FeoAivWHhgMHYR36JejU3xoZNWrp4qQKCT8RdE3BmSQUyO6bvtUPqlBUVWNypsMduGsENYMbi834bnqXAsaCgYKAVgSARISFQHGX2MioDALD-sHRL6R8vq82kP3cQ0178
