@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Set up Clasp Action
+    - name: Add Google credentials, directory
       uses: daikikatsuragawa/clasp-action@v1.1.0
       with:
         accessToken: ya29.a0AeXRPp6FzLrLUqX9HG-rSKkuGLWSeWE16fne_zTmDshqdJ2zcngclav6a5Tfu3CNUMbsKlpD4VEP-M_DEYAmGIx6-FeoAivWHhgMHYR36JejU3xoZNWrp4qQKCT8RdE3BmSQUyO6bvtUPqlBUVWNypsMduGsENYMbi834bnqXAsaCgYKAVgSARISFQHGX2MioDALD-sHRL6R8vq82kP3cQ0178
@@ -20,7 +20,7 @@ jobs:
         clientId: 1072944905499-vm2v2i5dvn0a0d2o4ca36i1vge8cvbn0.apps.googleusercontent.com
         clientSecret: v6V3fKV_zWU7iw1DrpO1rknX
         scriptId: 1zY2UgBwzHQPqfW4zOvqc4rh3Es23yj7OLDcWhpWtEysP7ipjnhABHog_
-        rootDir: './src'
+        rootDir: "./src"
         command: 'push'
 
     - name: Push using Clasp
