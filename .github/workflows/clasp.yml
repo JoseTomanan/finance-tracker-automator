@@ -2,8 +2,8 @@ name: Clasp Actions
 
 on:
   push:
-    # paths:
-    #   - 'src/**'
+    paths:
+      - 'src/**'
     branches: 
       - "master"
 
@@ -25,5 +25,5 @@ jobs:
         clientId: 1072944905499-vm2v2i5dvn0a0d2o4ca36i1vge8cvbn0.apps.googleusercontent.com
         clientSecret: v6V3fKV_zWU7iw1DrpO1rknX
         scriptId: 1zY2UgBwzHQPqfW4zOvqc4rh3Es23yj7OLDcWhpWtEysP7ipjnhABHog_
-        rootDir: 'src'
+        # rootDir: 'src'
         command: 'push'
