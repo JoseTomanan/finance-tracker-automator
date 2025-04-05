@@ -2,8 +2,8 @@ name: Clasp Actions
 
 on:
   push:
-    paths:
-      - 'src/**'
+    # paths:
+    #   - 'src/**'
     branches: 
       - "master"
 
@@ -15,16 +15,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-
-    # - name: Set up Node.js
-    #   uses: actions/setup-node@v3
-    #   with:
-    #     node-version: '20'
-
-    # - name: Install Clasp
-    #   run: npm install -g @google/clasp
     
-    - name: Push
+    - name: Push to Google Apps Script
       uses: daikikatsuragawa/clasp-action@v1.1.0
       with:
         accessToken: ya29.a0AeXRPp6FzLrLUqX9HG-rSKkuGLWSeWE16fne_zTmDshqdJ2zcngclav6a5Tfu3CNUMbsKlpD4VEP-M_DEYAmGIx6-FeoAivWHhgMHYR36JejU3xoZNWrp4qQKCT8RdE3BmSQUyO6bvtUPqlBUVWNypsMduGsENYMbi834bnqXAsaCgYKAVgSARISFQHGX2MioDALD-sHRL6R8vq82kP3cQ0178
@@ -33,5 +25,5 @@ jobs:
         clientId: 1072944905499-vm2v2i5dvn0a0d2o4ca36i1vge8cvbn0.apps.googleusercontent.com
         clientSecret: v6V3fKV_zWU7iw1DrpO1rknX
         scriptId: 1zY2UgBwzHQPqfW4zOvqc4rh3Es23yj7OLDcWhpWtEysP7ipjnhABHog_
-        # rootDir: 'src'
+        rootDir: 'src'
         command: 'push'
