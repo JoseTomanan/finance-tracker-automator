@@ -66,8 +66,8 @@ class MonthAdder {
     
     outgoing.archiveSheet();
     outgoing.setSheet(
-      this.#instantiateNewMonth()
-    );
+        this.#instantiateNewMonth()
+      );
     
     // const incomingTotalRow = incoming.getTotalRow();
     
@@ -96,7 +96,7 @@ class MonthAdder {
   
   #instantiateNewMonth() : GAS.Spreadsheet.Sheet {
     spreadsheet.getSheetByName("OUTGOINGTEMPLATE")!
-    .copyTo(spreadsheet).setName(this.newMonthName);
+      .copyTo(spreadsheet).setName(this.newMonthName);
     
     const returnable = spreadsheet.getSheetByName(this.newMonthName)!;
     
@@ -120,6 +120,6 @@ class MonthAdder {
   #activateNewMonth() : void {
     outgoing.sheet.activate();
     outgoing.sheet.getRange(4, 2)
-    .setValue(Utilities.formatDate(new Date(), "GMT+8", "MM/dd/yyyy"));
+      .setValue(Utilities.formatDate(new Date(), "GMT+8", "MM/dd/yyyy"));
   }
 }

@@ -57,8 +57,7 @@ class OutgoingSheet extends Sheet {
       Utilities.formatDate(new Date(), "GMT+8", "MM/dd/yyyy")
     );
     
-    if (e.tag != Tag.NULL)
-      {
+    if (e.tag != Tag.NULL) {
       this.setCellValue(currentRow, Column.D, e.entry);
       this.setCellValue(currentRow, Column.E, e.tag);
       this.setCellValue(currentRow, Column.F, `${e.cost}`);
@@ -78,13 +77,13 @@ class OutgoingSheet extends Sheet {
   */
   isNewWeek() : boolean {
     const latestEntryWeek = Utilities.formatDate(
-      this.getMostRecentDate(),
-      spreadsheet.getSpreadsheetTimeZone(), 'w'
-    );
+        this.getMostRecentDate(),
+        spreadsheet.getSpreadsheetTimeZone(), 'w'
+      );
     const currentWeek = Utilities.formatDate(
-      new Date(),
-      spreadsheet.getSpreadsheetTimeZone(), 'w'
-    );
+        new Date(),
+        spreadsheet.getSpreadsheetTimeZone(), 'w'
+      );
     
     return latestEntryWeek < currentWeek;
   }
@@ -117,9 +116,9 @@ class MasterSheet extends Sheet {
     
     for (var i = 0; i < masterHeaderLabels.length; i++) {
       this.sheet.getRange(lastRow, Column.E + i*2)
-      .setFormula(
-        `= SUMIF('${ newMonthName }'!$E4:$E, ${ masterHeaderLabels[i][0] }$1, '${ newMonthName }'!$F4:$F)`
-      );
+        .setFormula(
+          `= SUMIF('${ newMonthName }'!$E4:$E, ${ masterHeaderLabels[i][0] }$1, '${ newMonthName }'!$F4:$F)`
+        );
     }
   }
   
@@ -131,9 +130,9 @@ class MasterSheet extends Sheet {
     
     for (var i = 0; i < masterHeaderLabels.length; i++) {
       this.sheet.getRange(lastRow, Column.E + i*2 + 1)
-      .setFormula(
-        `= SUMIF(INCOMING! $C${ incomingNewRow }:$C, ${ masterHeaderLabels[i][0] }$1, INCOMING! $B${ incomingNewRow }:$B)`
-      );
+        .setFormula(
+          `= SUMIF(INCOMING! $C${ incomingNewRow }:$C, ${ masterHeaderLabels[i][0] }$1, INCOMING! $B${ incomingNewRow }:$B)`
+        );
     }
   }
   
@@ -152,9 +151,9 @@ class MasterSheet extends Sheet {
     }
     
     this.sheet.getRange(lastRow, Column.B)
-    .setFormula(`= SUM(${ costString })`);
+      .setFormula(`= SUM(${ costString })`);
     this.sheet.getRange(lastRow, Column.C)
-    .setFormula(`= SUM(${ allottedString })`);
+      .setFormula(`= SUM(${ allottedString })`);
   }
 }
 
@@ -197,7 +196,7 @@ class IncomingSheet extends Sheet {
     const copyDest = this.sheet.getRange(startingRow+1, 1, 1, 3);
     
     this.sheet.getRange(totalRow, 1, 1, 3)
-    .copyTo(copyDest);
+      .copyTo(copyDest);
     
     this.setCellValue(startingRow, Column.B, newMonthName);
     this.setCellValue(startingRow+1, Column.D, `= SUM(B${ startingRow + 2 }:B)`);
