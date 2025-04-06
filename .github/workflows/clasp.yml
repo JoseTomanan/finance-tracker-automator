@@ -2,8 +2,8 @@ name: Clasp Actions
 
 on:
   push:
-    paths:
-      - 'src/**'
+    # paths:
+    #   - 'src/**'
     branches: 
       - "master"
 
